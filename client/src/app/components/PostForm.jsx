@@ -112,7 +112,7 @@ const PostForm = ({ closeModal }) => {
                     body: JSON.stringify(newPost),
                 });
 
-                 if (res.ok) {
+                if (res.ok) {
                     dispatch(addPost(await res.json()));
 
                     setNewPost({
@@ -185,6 +185,7 @@ const PostForm = ({ closeModal }) => {
                     >Add New Post</div>
                 </div>
             </div>
+
         </div>
     )
 };

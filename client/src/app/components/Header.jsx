@@ -4,11 +4,13 @@ import { useSelector } from "react-redux";
 import { Welcome } from './Welcome';
 import { useState } from 'react';
 import Login from './LoginSignup/Login';
+import Signup from './LoginSignup/Signup';
 
 
 const Header = () => {
   const user = useSelector(state => state.user);
   const [openModal, setOpenModal] = useState(false);
+  const [openModalSignup, setOpenModalSignup] = useState(false);
 
   return (
     <header className="flex items-center justify-between py-10">
@@ -27,10 +29,14 @@ const Header = () => {
         <Link href="/blog" className="hidden font-medium text-gray-900 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400 sm:block">Blog</Link>
         <Link href="/tags" className="hidden font-medium text-gray-900 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400 sm:block">Tags</Link>
 
-        {!user.email && (          
-          <button className="openModalBtn" onClick={() => {setOpenModal(true)}}>Login</button>
+        {!user.email && (
+          <>
+            <button className="openModalBtn" onClick={() => { setOpenModal(true) }}>Login</button>
+            <button className="openModalBtn" onClick={() => { setOpenModalSignup(true) }}>Signup</button>
+          </>
         )}
         {openModal && <Login closeModal={setOpenModal} />}
+        {openModalSignup && <Signup closeModal={setOpenModalSignup} />}
         {user.email && <Welcome />}
 
       </div>

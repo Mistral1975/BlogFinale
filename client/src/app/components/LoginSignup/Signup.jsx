@@ -10,12 +10,12 @@ import password_icon from "../Assets/password.png";
 
 import "./LoginSignup.css";
 
-const Login = ({ closeModal }) => {
+const Signup = ({ closeModal }) => {
 
-    const [action, setAction] = useState("Login");
+    const [action, setAction] = useState("Signup");
 
     const [input, setInput] = useState({
-        name: '',
+        displayName: '',
         email: '',
         password: ''
     })
@@ -25,7 +25,7 @@ const Login = ({ closeModal }) => {
     const [isValid, setIsValid] = useState(null);
 
     const [validationErrors, setValidationErrors] = useState({
-        name: '',
+        displayName: '',
         email: '',
         password: ''
     })
@@ -60,6 +60,15 @@ const Login = ({ closeModal }) => {
     const handleSubmit = async () => {
 
         let formIsValid = true;
+        if (input.displayName === '') {
+            setValidationErrors(prevValue => {
+                return {
+                    ...prevValue,
+                    displayName: 'name cannot be empty'
+                }
+            })
+            formIsValid = false;
+        }
 
         if (input.email === '') {
             setValidationErrors(prevValue => {
@@ -84,43 +93,47 @@ const Login = ({ closeModal }) => {
         setIsValid(formIsValid);
 
         if (formIsValid) {
-            console.log(`Sto inviando i dati ${input.email}, ${input.password}`);
+            //console.log(`Sto inviando i dati ${input.email}, ${input.password}`);
             //setMessage('Logging in...')
-            setMessage({ text: 'Logging in...', type: 'info' });
+            setMessage({ text: 'Signing up...', type: 'info' });
 
             try {
-                const res = await fetch('http://localhost:8000/login', {
+                const res = await fetch('http://localhost:8000/user', {
                     method: 'POST',
                     headers: {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
+                        displayName: input.displayName,
                         email: input.email,
                         password: input.password
                     })
                 });
 
+                console.log(res)
+
                 if (res.ok) {
                     //console.log('Login riuscito!');
-                    dispatch(login(await res.json()));
+                    //dispatch(login(await res.json()));
                     //setMessage(null);
-                    setMessage({ text: 'Successfully logged in!', type: 'info' });
+                    setMessage({ text: 'Successfully signed up!', type: 'info' });
                     closeModal(false);
                 } else {
                     //setMessage('Errore! Credenziali non valide.');
-                    setMessage({ text: 'Errore! Credenziali non valide.', type: 'error' });
+                    setMessage({ text: 'Registrazione non valida.', type: 'error' });
                 }
             } catch (e) {
                 //setMessage("Errore! Impossibile trovare il tuo account");
-                setMessage({ text: "Errore! Impossibile trovare il tuo account", type: 'error' });
+                setMessage({ text: "Errore! Impossibile registrare il tuo account", type: 'error' });
             }
         } else {
             setMessage(null);
         }
     }
 
-    console.log("input : ", input)
-    console.log("validationErrors : ", validationErrors)
+    //console.log("input : ", input)
+    //console.log("validationErrors : ", validationErrors)
+
 
     return (
         <div className="modalBackground">
@@ -133,10 +146,11 @@ const Login = ({ closeModal }) => {
                     <div className="underline"></div>
                 </div>
                 <div className="inputs">
-                    {action === "Login" ? <div></div> : <div className="input">
+                    {<div className="input">
                         <img src={user_icon.src} alt="" />
-                        <input type="text" placeholder="Name" />
+                        <input type="text" id="displayName" name="displayName" placeholder="Name" onChange={(e) => handleChange(e)} />
                     </div>}
+                    {validationErrors.displayName && <div className="error-message">{validationErrors.displayName}</div>}
                     <div className="input">
                         <img src={email_icon.src} alt="" />
                         <input type="email" id="email" name="email" placeholder="Email" onChange={(e) => handleChange(e)} />
@@ -153,20 +167,18 @@ const Login = ({ closeModal }) => {
                     <div className={message.type === "info" ? "message" : "error-message"}>{message.text}</div>
                 }
 
-
-                {action === "Sign Up" ? <div></div> : <div className="forgot-password">Lost Password? <span>Click Here!</span></div>}
                 <div className="submit-container">
-                    <div className={action === "Login" ? "submit gray" : "submit"} onClick={() => { setAction("Sign Up") }}>Sign Up</div>
-                    <div className={action === "Sign Up" ? "submit gray" : "submit"}
+                    {/* <div className={action === "Login" ? "submit gray" : "submit"} onClick={() => { setAction("Sign Up") }}>Sign Up</div> */}
+                    <div className="submit"
                         onClick={() => {
-                            setAction("Login")
+                            setAction("Signup")
                             handleSubmit()
                         }}
-                    >Login</div>
+                    >Signup</div>
                 </div>
             </div>
         </div>
     )
 }
 
-export default Login;
+export default Signup;

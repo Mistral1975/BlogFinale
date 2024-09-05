@@ -7,12 +7,14 @@ import { useDispatch } from "react-redux";
 
 const Login = () => {
   const [input, setInput] = useState({
+    name: '',
     email: '',
     password: ''
   })
   const [message, setMessage] = useState('Please insert email and password');
   const [isValid, setIsValid] = useState(null);
   const [validationErrors, setValidationErrors] = useState({
+    name: '',
     email: '',
     password: ''
   })
@@ -44,7 +46,7 @@ const Login = () => {
 
   useEffect(() => {
     if (isValid) {
-      console.log(`Sto inviandoi dati ${input.email}, ${input.password}`)
+      //console.log(`Sto inviandoi dati ${input.email}, ${input.password}`)
       setMessage('Logging in...')
       fetch('http://localhost:8000/login', {
         method: 'POST',
@@ -70,7 +72,7 @@ const Login = () => {
       setValidationErrors(prevValue => {
         return {
           ...prevValue,
-          email: 'email cannot be empty'
+          email: 'Email cannot be empty'
         }
       })
       setIsValid(false);
@@ -80,7 +82,7 @@ const Login = () => {
       setValidationErrors(prevValue => {
         return {
           ...prevValue,
-          password: 'password cannot be empty'
+          password: 'Password cannot be empty'
         }
       })
       setIsValid(false);
