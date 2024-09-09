@@ -49,7 +49,7 @@ const SinglePostLayout = () => {
   }, [id, dispatch, user.accessToken]);
 
 
-  const [openModal, setOpenModal] = useState(false);    
+  const [openModal, setOpenModal] = useState(false);
   const handleOpenModal = () => setOpenModal(true);
 
 
@@ -79,7 +79,7 @@ const SinglePostLayout = () => {
       console.error('Error deleting post:', error);
     }
   };
-  
+
   if (loading) {
     return <div>Caricamento...</div>;
   }
