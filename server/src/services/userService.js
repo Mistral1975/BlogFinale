@@ -36,6 +36,15 @@ const sendRegistrationMail = async(email, link) => {
             - Raggiunti almeno 50€ indicaci la tua banca e incassa i soldi.
 
             Il Team BlogTNV `;
+    /* const transport = {
+        host: 'smtp.elasticemail.com', // smtp.google.com / smtp.office365.com
+        port: 2525, // 465, 587, 25
+        secure: false, // secure for 465, false for other port
+        auth: {
+            user: senderAddress,
+            pass: '8035AF9563D298C9DB72C1BFCD6457FA8319', // yhndqshdoqslvisf
+        },
+    }; */
     const transport = {
         host: 'smtp.elasticemail.com', // smtp.google.com / smtp.office365.com
         port: 2525, // 465, 587, 25
