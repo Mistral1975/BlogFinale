@@ -1,0 +1,138 @@
+.modalBackground {
+    top: -160px;
+    left: 0;
+    width: 100vw;
+    height: 80vh;
+    /* background-color: rgba(200, 200, 200); */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Sfondo semi-trasparente */
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #000;
+    z-index: 1000;
+}
+
+.containerLogin {
+    display: flex;
+    flex-direction: column;
+    width: 500px;
+    margin: auto;
+    margin-top: 200px;
+    padding: 8px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.titleCloseBtn {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.titleCloseBtn button {
+    background-color: transparent;
+    border: none;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #000;
+}
+
+.headerLogin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+    margin-top: 16px;
+}
+
+.text {
+    color: rgba(107, 114, 128, 1);
+    /* color:rgba(156, 163, 175, 1); */
+    font-size: 40px;
+    font-weight: 700;
+}
+
+.underline {
+    width: 60px;
+    height: 6px;
+    background-color: rgba(107, 114, 128, 1);
+    border-radius: 9px;
+}
+
+.inputs {
+    margin-top: 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.input {
+    display: flex;
+    align-items: center;
+    margin: auto;
+    width: 90%;
+    height: 60px;
+    background: #EAEAEA;
+    border-radius: 6px;
+}
+
+.input img {
+    margin: 0px 16px;
+}
+
+.input input {
+    width: 380px;
+    height: 50px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: rgba(107, 114, 128, 1);
+    font-size: 16px;
+}
+
+.forgot-password {
+    padding-left: 62px;
+    margin-top: 27px;
+    color: rgba(107, 114, 128, 1);
+    font-size: 18px;
+}
+
+.forgot-password span {
+    /* color: #b40018;  */
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.error-message {
+    padding-left: 32px;
+    color: #b40018;
+}
+
+.submit-container {
+    display: flex;
+    gap: 30px;
+    margin: 48px auto;
+}
+
+.submit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200px;
+    height: 59px;
+    color: #fff;
+    background-color: darkgreen;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.gray {
+    background: #EAEAEA;
+    color: rgba(107, 114, 128, 1);
+}
