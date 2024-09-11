@@ -26,8 +26,5 @@ const userSlice = createSlice({
         },
     }
 })
-// La creazione di una Slice richiede un nome (stringa) per identificare la Slice,
-// un valore di stato iniziale
-// e una o più reducer functions per definire come lo stato può essere aggiornato
 export const { login, logout } = userSlice.actions;
 export default userSlice.reducer 

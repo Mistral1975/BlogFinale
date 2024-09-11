@@ -3,11 +3,9 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "../../store/userSlice";
-
 import user_icon from "../Assets/person.png";
 import email_icon from "../Assets/email.png";
 import password_icon from "../Assets/password.png";
-
 import "./LoginSignup.css";
 
 const Login = ({ closeModal }) => {
@@ -15,7 +13,6 @@ const Login = ({ closeModal }) => {
     const [action, setAction] = useState("Login");
 
     const [input, setInput] = useState({
-        name: '',
         email: '',
         password: ''
     })
@@ -25,7 +22,6 @@ const Login = ({ closeModal }) => {
     const [isValid, setIsValid] = useState(null);
 
     const [validationErrors, setValidationErrors] = useState({
-        name: '',
         email: '',
         password: ''
     })
@@ -61,31 +57,39 @@ const Login = ({ closeModal }) => {
 
         let formIsValid = true;
 
+        // Validazione del campo "Email"
         if (input.email === '') {
-            setValidationErrors(prevValue => {
-                return {
-                    ...prevValue,
-                    email: 'email cannot be empty'
-                }
-            })
+            setValidationErrors(prevValue => ({
+                ...prevValue,
+                email: 'L\'email non può essere vuota'
+            }));
+            formIsValid = false;
+        } else if (!/\S+@\S+\.\S+/.test(input.email)) {
+            setValidationErrors(prevValue => ({
+                ...prevValue,
+                email: 'Inserisci un\'email valida'
+            }));
             formIsValid = false;
         }
 
+        // Validazione del campo "Password"
         if (input.password === '') {
-            setValidationErrors(prevValue => {
-                return {
-                    ...prevValue,
-                    password: 'password cannot be empty'
-                }
-            })
+            setValidationErrors(prevValue => ({
+                ...prevValue,
+                password: 'La password non può essere vuota'
+            }));
+            formIsValid = false;
+        } else if (input.password.length < 6) {
+            setValidationErrors(prevValue => ({
+                ...prevValue,
+                password: 'La password deve essere almeno di 6 caratteri'
+            }));
             formIsValid = false;
         }
 
         setIsValid(formIsValid);
 
         if (formIsValid) {
-            console.log(`Sto inviando i dati ${input.email}, ${input.password}`);
-            //setMessage('Logging in...')
             setMessage({ text: 'Logging in...', type: 'info' });
 
             try {
@@ -101,26 +105,19 @@ const Login = ({ closeModal }) => {
                 });
 
                 if (res.ok) {
-                    //console.log('Login riuscito!');
                     dispatch(login(await res.json()));
-                    //setMessage(null);
                     setMessage({ text: 'Successfully logged in!', type: 'info' });
                     closeModal(false);
                 } else {
-                    //setMessage('Errore! Credenziali non valide.');
                     setMessage({ text: 'Errore! Credenziali non valide.', type: 'error' });
                 }
             } catch (e) {
-                //setMessage("Errore! Impossibile trovare il tuo account");
                 setMessage({ text: "Errore! Impossibile trovare il tuo account", type: 'error' });
             }
         } else {
             setMessage(null);
         }
     }
-
-    console.log("input : ", input)
-    console.log("validationErrors : ", validationErrors)
 
     return (
         <div className="modalBackground">
@@ -133,10 +130,6 @@ const Login = ({ closeModal }) => {
                     <div className="underline"></div>
                 </div>
                 <div className="inputs">
-                    {action === "Login" ? <div></div> : <div className="input">
-                        <img src={user_icon.src} alt="" />
-                        <input type="text" placeholder="Name" />
-                    </div>}
                     <div className="input">
                         <img src={email_icon.src} alt="" />
                         <input type="email" id="email" name="email" placeholder="Email" onChange={(e) => handleChange(e)} />
@@ -153,16 +146,14 @@ const Login = ({ closeModal }) => {
                     <div className={message.type === "info" ? "message" : "error-message"}>{message.text}</div>
                 }
 
-
-                {action === "Sign Up" ? <div></div> : <div className="forgot-password">Lost Password? <span>Click Here!</span></div>}
                 <div className="submit-container">
-                    <div className={action === "Login" ? "submit gray" : "submit"} onClick={() => { setAction("Sign Up") }}>Sign Up</div>
-                    <div className={action === "Sign Up" ? "submit gray" : "submit"}
+                    <div className="submit"
                         onClick={() => {
                             setAction("Login")
                             handleSubmit()
                         }}
-                    >Login</div>
+                        >Login
+                    </div>
                 </div>
             </div>
         </div>

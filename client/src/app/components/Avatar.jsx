@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from "../avatar.module.css";
+import styles from "../css/avatar.module.css";
 
 const Avatar = ({ displayName }) => {
     // Funzione per ottenere le iniziali dal displayName

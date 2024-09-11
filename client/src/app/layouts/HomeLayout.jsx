@@ -24,7 +24,6 @@ const HomeLayout = () => {
       },
     }).then(async res => {
       const jsonRes = await res.json();
-      //console.log(`lista caricata`, jsonRes);
       dispatch(setList(jsonRes));
     }).catch(error => {
       console.error('Errore nel recuperare i post:', error);

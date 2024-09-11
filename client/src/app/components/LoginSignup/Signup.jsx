@@ -1,13 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { login } from "../../store/userSlice";
-
 import user_icon from "../Assets/person.png";
 import email_icon from "../Assets/email.png";
 import password_icon from "../Assets/password.png";
-
 import "./LoginSignup.css";
 
 const Signup = ({ closeModal }) => {
@@ -20,7 +16,6 @@ const Signup = ({ closeModal }) => {
         password: ''
     })
 
-    //const [message, setMessage] = useState('Please insert email and password');
     const [message, setMessage] = useState(null);
     const [isValid, setIsValid] = useState(null);
 
@@ -29,8 +24,6 @@ const Signup = ({ closeModal }) => {
         email: '',
         password: ''
     })
-
-
 
     const handleChange = (e) => {
         const { name, value } = e.target; // utilizza l'assegnazione per destructuring per estrarre due proprietà dall'oggetto e.target: name (l'attributo name del campo di input) e value (il valore corrente inserito dall'utente).
@@ -55,47 +48,53 @@ const Signup = ({ closeModal }) => {
         })
     }
 
-    const dispatch = useDispatch();
-
     const handleSubmit = async () => {
 
         let formIsValid = true;
+
+        // Validazione del campo "Nome"
         if (input.displayName === '') {
-            setValidationErrors(prevValue => {
-                return {
-                    ...prevValue,
-                    displayName: 'name cannot be empty'
-                }
-            })
+            setValidationErrors(prevValue => ({
+                ...prevValue,
+                displayName: 'Il nome non può essere vuoto'
+            }));
             formIsValid = false;
         }
 
+        // Validazione del campo "Email"
         if (input.email === '') {
-            setValidationErrors(prevValue => {
-                return {
-                    ...prevValue,
-                    email: 'email cannot be empty'
-                }
-            })
+            setValidationErrors(prevValue => ({
+                ...prevValue,
+                email: 'L\'email non può essere vuota'
+            }));
+            formIsValid = false;
+        } else if (!/\S+@\S+\.\S+/.test(input.email)) {
+            setValidationErrors(prevValue => ({
+                ...prevValue,
+                email: 'Inserisci un\'email valida'
+            }));
             formIsValid = false;
         }
 
+        // Validazione del campo "Password"
         if (input.password === '') {
-            setValidationErrors(prevValue => {
-                return {
-                    ...prevValue,
-                    password: 'password cannot be empty'
-                }
-            })
+            setValidationErrors(prevValue => ({
+                ...prevValue,
+                password: 'La password non può essere vuota'
+            }));
+            formIsValid = false;
+        } else if (input.password.length < 6) {
+            setValidationErrors(prevValue => ({
+                ...prevValue,
+                password: 'La password deve essere almeno di 6 caratteri'
+            }));
             formIsValid = false;
         }
 
         setIsValid(formIsValid);
 
         if (formIsValid) {
-            //console.log(`Sto inviando i dati ${input.email}, ${input.password}`);
-            //setMessage('Logging in...')
-            setMessage({ text: 'Signing up...', type: 'info' });
+            setMessage({ text: 'Registrazione in corso...', type: 'info' });
 
             try {
                 const res = await fetch('http://localhost:8000/user', {
@@ -110,30 +109,19 @@ const Signup = ({ closeModal }) => {
                     })
                 });
 
-                console.log(res)
-
                 if (res.ok) {
-                    //console.log('Login riuscito!');
-                    //dispatch(login(await res.json()));
-                    //setMessage(null);
-                    setMessage({ text: 'Successfully signed up!', type: 'info' });
+                    setMessage({ text: 'Registrazione riuscita!', type: 'success' });
                     closeModal(false);
                 } else {
-                    //setMessage('Errore! Credenziali non valide.');
-                    setMessage({ text: 'Registrazione non valida.', type: 'error' });
+                    setMessage({ text: 'Errore! Impossibile registrare l\'utente.', type: 'error' });
                 }
             } catch (e) {
-                //setMessage("Errore! Impossibile trovare il tuo account");
-                setMessage({ text: "Errore! Impossibile registrare il tuo account", type: 'error' });
+                setMessage({ text: "Errore! Si è verificato un problema.", type: 'error' });
             }
         } else {
-            setMessage(null);
+            setMessage({ text: 'Compila tutti i campi correttamente', type: 'error' });
         }
     }
-
-    //console.log("input : ", input)
-    //console.log("validationErrors : ", validationErrors)
-
 
     return (
         <div className="modalBackground">
@@ -168,13 +156,13 @@ const Signup = ({ closeModal }) => {
                 }
 
                 <div className="submit-container">
-                    {/* <div className={action === "Login" ? "submit gray" : "submit"} onClick={() => { setAction("Sign Up") }}>Sign Up</div> */}
                     <div className="submit"
                         onClick={() => {
                             setAction("Signup")
                             handleSubmit()
                         }}
-                    >Signup</div>
+                        >Signup
+                    </div>
                 </div>
             </div>
         </div>

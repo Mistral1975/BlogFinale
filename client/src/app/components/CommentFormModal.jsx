@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import "../commentform.module.css"
+import "../css/commentform.module.css";
 
 const CommentFormModal = ({ postId, closeModal, onUpdateComments, initialComment = null, mode = 'add' }) => {
 

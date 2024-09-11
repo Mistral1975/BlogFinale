@@ -13,21 +13,17 @@ import Comments from '../components/Comments';
 import EditPostForm from '../components/EditPostForm';
 
 const SinglePostLayout = () => {
-
   const { id } = useParams();
   const dispatch = useDispatch();
   const router = useRouter(); // Usa il router di Next.js
   const user = useSelector(state => state.user);
-
   const loading = useSelector((state) => state.postblog.loading);
   const error = useSelector((state) => state.postblog.error);
-
   const postsList = useSelector(state => state.postblog.postsList);
   const singlePost = postsList.find(post => post._id === id);
   const currentIndex = postsList.findIndex(post => post._id === id);
   const prevPost = currentIndex > 0 ? postsList[currentIndex - 1] : null;
   const nextPost = currentIndex < postsList.length - 1 ? postsList[currentIndex + 1] : null;
-
   const [showForm, setShowForm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -49,8 +45,6 @@ const SinglePostLayout = () => {
 
   const [openModal, setOpenModal] = useState(false);    
   const handleOpenModal = () => setOpenModal(true);
-
-
   const openForm = () => setShowForm(true);
   const closeForm = () => setShowForm(false);
   const openDeleteConfirm = () => setShowDeleteConfirm(true);

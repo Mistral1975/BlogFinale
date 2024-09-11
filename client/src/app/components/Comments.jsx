@@ -5,7 +5,7 @@ import { setComments, setCommentsCount, addComment, updateComment } from '../sto
 import Link from 'next/link';
 import Image from './Image';
 import PostDate from './PostDate';
-import "../comments.css";
+import "../css/comments.css";
 
 // Importa il componente modale
 import CommentFormModal from './CommentFormModal';

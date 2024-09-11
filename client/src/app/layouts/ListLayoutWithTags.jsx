@@ -38,25 +38,19 @@ const ListLayoutWithTags = () => {
   }, [currentTag, dispatch]);
 
   if (pathname === "/blog") {
-    //console.log('Percorso /blog soddisfatto');
     displayPosts = postsList.length ?
       postsList.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Ordina per data di creazione (discendente)
       : [];
   } else {
-    //console.log('Condizione tag !== "/blog" soddisfatta', currentTag);
-
     displayPosts = postsList.length ?
       postsList.filter((post) => post.tags.includes(currentTag))
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Ordina per data di creazione (discendente)
       : [];
   }
 
-  console.log("displayPosts -------->>>>>>>>>>> ", displayPosts)
-
   return (
     <>
       <Header />
-
       <main>
         <div>
           <div className="pb-6 pt-6">

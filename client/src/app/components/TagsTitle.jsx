@@ -8,7 +8,6 @@ const TagsTitle = () => {
     const posts = useSelector(state => state.postblog.postsList);    
     const [openModal, setOpenModal] = useState(false);    
     const handleOpenModal = () => setOpenModal(true);
-    const handleCloseModal = () => setOpenModal(false);
 
     return (
         <>

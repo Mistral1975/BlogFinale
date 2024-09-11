@@ -4,14 +4,14 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useState } from 'react';
 import { logout } from '../store/userSlice';
 import Login from './LoginSignup/Login';
-//import Signup from './LoginSignup/Signup';
+import Signup from './LoginSignup/Signup';
 import Avatar from './Avatar';
 
 const Header = () => {
   const user = useSelector(state => state.user);
   const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState(false);
-  //const [openModalSignup, setOpenModalSignup] = useState(false);
+  const [openModalSignup, setOpenModalSignup] = useState(false);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -31,6 +31,7 @@ const Header = () => {
       </div>
 
       <div className="flex items-center space-x-4 leading-5 sm:space-x-6">
+
         <Link href="/blog" className="hidden font-medium text-gray-900 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400 sm:block">Blog</Link>
         <Link href="/tags" className="hidden font-medium text-gray-900 hover:text-primary-500 dark:text-gray-100 dark:hover:text-primary-400 sm:block">Tags</Link>
 
@@ -38,14 +39,13 @@ const Header = () => {
 
         {!user.email && (
           <>
-            {/* <button className="openModalBtn hover:text-primary-500" onClick={() => setOpenModal(true)}>Login</button>
-            <button className="openModalBtn hover:text-primary-500" onClick={() => setOpenModalSignup(true)}>Signup</button> */}
-            <button className="openModalBtn hover:text-primary-500" onClick={() => {setOpenModal(true)}}>Login</button>
+            <button className="openModalBtn hover:text-primary-500" onClick={() => setOpenModal(true)}>Login</button>
+            <button className="openModalBtn hover:text-primary-500" onClick={() => setOpenModalSignup(true)}>Signup</button>
           </>
         )}
 
         {openModal && <Login closeModal={setOpenModal} />}
-        {/* {openModalSignup && <Signup closeModal={setOpenModalSignup} />} */}
+        {openModalSignup && <Signup closeModal={setOpenModalSignup} />}
 
         {user.name && (
           <div className="flex items-center space-x-4">

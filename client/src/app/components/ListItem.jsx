@@ -1,36 +1,14 @@
 "use client";
 
-//import styles from "../list.module.css";
-import { useState } from "react";
-//import { TodoForm } from "./ToDoForm";
-import { useDispatch, useSelector } from "react-redux";
-//import { updateToDo, deleteToDo } from "../store/todoSlice";
-//import ItemActions from "./ItemActions";
-
 import Link from "next/link";
 import PostDate from "./PostDate";
 
 export const ListItem = ({ item, id }) => {
-    const dispatch = useDispatch();
-    const user = useSelector(state => state.user);
-
-    //console.log("ITEM: ----> ", item)
-    //console.log("ID: ----> ", id)
-
+    
     return (
         <>
-            {/* <div key={id} >
-                <div className={styles.date}> {dueDate} </div>
-                <div className={styles.todoTitle}> {item.name} </div>
-                <div className={styles.todoDescription}> {item.description}</div>
-            </div> */}
-
-
-
-
-
             {/* <!-- SINGOLO ARTICOLO --> */}
-            <li className="py-12" key={item._id}>
+            <li className="py-12">
                 <article>
                     <div className="space-y-2 xl:grid xl:grid-cols-5 items-start xl:space-y-0">
                         <div className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">
