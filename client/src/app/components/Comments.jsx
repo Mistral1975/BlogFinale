@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from './Image';
 import PostDate from './PostDate';
 import "../css/comments.css";
+import Like from './Like';
 
 // Importa il componente modale
 import CommentFormModal from './CommentFormModal';
@@ -98,7 +99,7 @@ const Comments = ({ postId }) => {
   return (
     <>
       <div className="pb-6 pt-6 flex justify-between text-gray-700 dark:text-gray-300" id="comment">
-        <div className="text-blue-500 hover:underline">LIKES (70)</div>
+        <Like />
         {user.email && ( // Mostra il bottone solo se l'utente è loggato
           <button
             onClick={() => handleOpenModal()}
