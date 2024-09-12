@@ -4,6 +4,8 @@ import "../css/commentform.module.css";
 
 const CommentFormModal = ({ postId, closeModal, onUpdateComments, initialComment = null, mode = 'add' }) => {
 
+    console.log("initialComment: ", initialComment)
+
     const user = useSelector(state => state.user);
     const [newComment, setNewComment] = useState({
         description: '',
@@ -58,7 +60,7 @@ const CommentFormModal = ({ postId, closeModal, onUpdateComments, initialComment
         }
 
         if (formIsValid) {
-            
+
             setMessage({ text: mode === 'edit' ? 'Aggiornamento del commento...' : 'Inserimento nuovo commento...', type: 'info' });
 
             try {
@@ -96,6 +98,11 @@ const CommentFormModal = ({ postId, closeModal, onUpdateComments, initialComment
     console.log("newComment : ", newComment)
     console.log("validationErrors : ", validationErrors)
 
+    // Controlla se l'utente loggato è l'autore del commento
+    const isAuthor = initialComment && initialComment.userId._id === user._id;
+    console.log("initialComment: ", initialComment)
+    console.log("user: ", user)
+
     return (
         <>
             <div className="modalBackground">
@@ -127,11 +134,12 @@ const CommentFormModal = ({ postId, closeModal, onUpdateComments, initialComment
                     {message &&
                         <div className={message.type === "info" ? "message" : "error-message"}>{message.text}</div>
                     }
-
-                    <div className="submit-container">
-                        <div className="submit gray" onClick={() => closeModal()}>Annulla</div>
-                        <div className="submit" onClick={handleSubmit}>Invia</div>
-                    </div>
+         
+                        <div className="submit-container">
+                            <div className="submit gray" onClick={() => closeModal()}>Annulla</div>
+                            <div className="submit" onClick={handleSubmit}>Invia</div>
+                        </div>
+                    
                 </div>
             </div>
 

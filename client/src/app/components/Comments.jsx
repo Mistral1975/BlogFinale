@@ -107,6 +107,7 @@ const Comments = ({ postId }) => {
             Aggiungi commento
           </button>
         )}
+        {console.log("EDITCOMMENT VALE: ",editComment)}
         {openModal && <CommentFormModal
           postId={postId}
           closeModal={() => setOpenModal(false)}
