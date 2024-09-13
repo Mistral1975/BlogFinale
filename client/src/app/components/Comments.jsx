@@ -15,6 +15,10 @@ const Comments = ({ postId }) => {
 
   const dispatch = useDispatch();
   const [showComments, setShowComments] = useState(false); // Stato per gestire la visibilità dei commenti
+
+  const [commentsToShow, setCommentsToShow] = useState([]); // Stato per gestire i commenti visualizzati progressivamente
+  const [commentsLoaded, setCommentsLoaded] = useState(3);  // Stato per gestire quanti commenti sono caricati inizialmente
+
   const [openModal, setOpenModal] = useState(false);
   const [editComment, setEditComment] = useState(null); // Stato per il commento da modificare
   const user = useSelector(state => state.user); // Per verificare se l'utente è loggato
@@ -83,6 +87,8 @@ const Comments = ({ postId }) => {
           const commentsData = await response.json();
           dispatch(setComments({ postId, comments: commentsData }));
           dispatch(setCommentsCount({ postId, commentsCount: commentsData.length }));
+
+          setCommentsToShow(commentsData.slice(0, 3)); // Mostra solo i primi 3 commenti inizialmente
         } else {
           console.error('Errore nel recuperare i commenti');
         }
@@ -94,7 +100,23 @@ const Comments = ({ postId }) => {
     fetchComments();
   }, [postId, dispatch]);
 
-  const toggleComments = () => setShowComments(!showComments);
+  //const toggleComments = () => setShowComments(!showComments);
+
+  /**
+    * Mostra o nascondere i commenti cambiando il valore booleano di showComments da true a false e viceversa.
+    */
+  const toggleComments = () => {
+    setShowComments(!showComments);
+  }
+
+  /**
+   * Carica altri 10 commenti a partire dall'attuale stato di caricamento
+   */
+  const loadMoreComments = () => {
+    const newLoaded = commentsLoaded + 10;
+    setCommentsToShow(comments.slice(0, newLoaded));
+    setCommentsLoaded(newLoaded);
+  }
 
   return (
     <>
@@ -129,8 +151,9 @@ const Comments = ({ postId }) => {
           {commentsCount === 0 ? (
             <p className="text-gray-500 text-center">Nessun commento disponibile</p>
           ) : (
+            <>
             <ul>
-              {comments.map(comment => (
+              {commentsToShow.map(comment => (
                 <li key={comment._id}>
                   <div className="comment">
                     <div className="comment-img">
@@ -169,6 +192,14 @@ const Comments = ({ postId }) => {
                 </li>
               ))}
             </ul>
+            {commentsLoaded < commentsCount && (
+              <div className="text-center mt-4">
+                <button onClick={loadMoreComments} className="text-blue-500 hover:underline">
+                  Carica altri commenti
+                </button>
+              </div>
+            )}
+            </>
           )}
         </section>
       )}
