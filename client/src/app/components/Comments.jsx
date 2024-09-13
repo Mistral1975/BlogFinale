@@ -108,7 +108,7 @@ const Comments = ({ postId }) => {
             Aggiungi commento
           </button>
         )}
-        {console.log("EDITCOMMENT VALE: ",editComment)}
+        {console.log("EDITCOMMENT VALE: ", editComment)}
         {openModal && <CommentFormModal
           postId={postId}
           closeModal={() => setOpenModal(false)}
@@ -153,24 +153,17 @@ const Comments = ({ postId }) => {
                       <div className="flex w-544 comment-desc">
                         <p>{comment.description}</p>
                       </div>
-                      <div className="flex justify-end">
-                        {/* <div className="comment-likes">
-                          <div className="comment-likes-up">
-                            <Image src="https://rvs-comment-module.vercel.app/Assets/Up.svg" width={13} height={8} alt="" />
-                            <span>2</span>
+                      {/* Mostra i pulsanti solo se l'utente è l'autore del commento */}
+                      {comment.userId._id === user._id && (
+                        <div className="flex justify-end">
+                          <div className="comment-reply mr-8">
+                            <button onClick={() => handleEdit(comment._id, comment.description)} className="text-blue-500 cursor-text">Modifica</button>
                           </div>
-                          <div className="comment-likes-down">
-                            <Image src="https://rvs-comment-module.vercel.app/Assets/Down.svg" width={13} height={8} alt="" />
-                            <span></span>
+                          <div className="comment-report mr-2">
+                            <button onClick={() => handleDelete(comment._id)} className="text-red-500 cursor-text">Elimina</button>
                           </div>
-                        </div> */}
-                        <div className="comment-reply mr-8">
-                          <button onClick={() => handleEdit(comment._id, comment.description)} className="text-blue-500 cursor-text">Modifica</button>
                         </div>
-                        <div className="comment-report mr-2">
-                          <button onClick={() => handleDelete(comment._id)} className="text-red-500 cursor-text">Elimina</button>
-                        </div>
-                      </div>
+                      )}
                     </div>
                   </div>
                 </li>
