@@ -65,14 +65,14 @@ const removeComments = async (id, commentId, userId) => {
     return true;
 }
 
-/*const getCommentsByPostId = async (id) => {
+const getCommentsByPostId = async (id) => {
     return await activityRepo.getCommentsByPostId(id);
-}*/
+}
 
-const getCommentsByPostId = async (id, page, limit) => {
+/*const getCommentsByPostId = async (id, page, limit) => {
     //console.log("id ----> ", id)
     return await activityRepo.getCommentsByPostId(id, page, limit);
-}
+}*/
 
 const checkActivity = (activity) => {
     if (activity === null) {

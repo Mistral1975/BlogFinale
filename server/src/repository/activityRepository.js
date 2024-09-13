@@ -134,12 +134,19 @@ const removeComments = async (id, commentId, userId) => {
     return post.comments; // Restituisce la lista di commenti per il post specificato
 }*/
 
-const getCommentsByPostId = async (postId, page, limit) => {
+/* const getCommentsByPostId = async (postId, page, limit) => {
     const skip = (page - 1) * limit;
     const comments = await commentSchema.find({ postId: postId })
         .populate('userId', 'displayName')
         .skip(skip)
         .limit(limit)
+        .exec();
+    return comments;
+} */
+
+const getCommentsByPostId = async (postId) => {
+    const comments = await commentSchema.find({ postId: postId })
+        .populate('userId', 'displayName')
         .exec();
     return comments;
 }
