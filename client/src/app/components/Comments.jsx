@@ -29,37 +29,139 @@ const Comments = ({ postId }) => {
     setEditComment(comment);
     setOpenModal(true);
   };
-
-  const handleUpdateComments = (newComment) => {
+ 
+  const handleUpdateComments = async (newComment) => {
     if (editComment) {
-      // Aggiorna un commento esistente
-      dispatch(updateComment({ postId, updatedComment: newComment }));
+      // Se stiamo modificando un commento esistente
+      const updatedComments = comments.map(comment =>
+        comment._id === editComment._id
+          ? { ...comment, description: newComment.description }
+          : comment
+      );
+  
+      // Aggiorna immediatamente l'interfaccia utente con la modifica
+      setCommentsToShow(updatedComments.slice(0, commentsLoaded));
+      dispatch(setComments({ postId, comments: updatedComments }));
+
+
+
+
+
+      try {
+        // Invia la modifica al server
+        const response = await fetch(`http://localhost:8000/posts/${postId}/comments/${editComment._id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.accessToken}`
+          },
+          body: JSON.stringify(newComment)
+        });
+  
+        if (response.ok) {
+          const updatedCommentFromServer = await response.json();
+  
+          // Aggiorna il commento nello store con la versione confermata dal server
+          const updatedCommentsAfterSave = updatedComments.map(comment =>
+            comment._id === updatedCommentFromServer._id
+              ? updatedCommentFromServer
+              : comment
+          );
+  
+          // Aggiorna lo stato locale e Redux con il commento modificato
+          const sortedComments = updatedCommentsAfterSave.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          setCommentsToShow(sortedComments.slice(0, commentsLoaded));
+          dispatch(setComments({ postId, comments: sortedComments }));
+        } else {
+          console.error('Errore nella modifica del commento');
+          // Eventuale gestione dell'errore: ripristina il commento precedente o mostra un messaggio
+        }
+      } catch (error) {
+        console.error('Errore durante la modifica del commento:', error);
+        // Eventuale gestione dell'errore: ripristina il commento precedente o mostra un messaggio
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+      
     } else {
-      /* // Aggiungi un nuovo commento
-      dispatch(setComments({
-        postId,
-        comments: [newComment, ...comments]
-      }));
-      dispatch(setCommentsCount({ postId, commentsCount: commentsCount + 1 })); */
-
-
-      /* const updatedComments = [newComment, ...comments];
+      // Crea un ID temporaneo per il nuovo commento fino a quando non riceviamo una risposta dal server (Inserimento di un nuovo commento gestito come ottimistico)
+      const tempId = `temp-${new Date().getTime()}`;
+      const tempComment = {
+        _id: tempId,
+        ...newComment,
+        userId: {
+          _id: user._id, // Assegna subito l'ID utente
+          displayName: user.email // O usa un altro campo appropriato per il nome visualizzato
+        },
+        createdAt: new Date().toISOString() // Assegna la data corrente
+      };
+  
+      // Aggiungi subito il commento temporaneo allo stato locale
+      const updatedComments = [tempComment, ...comments];
+      setCommentsToShow(updatedComments.slice(0, commentsLoaded));
       dispatch(setComments({ postId, comments: updatedComments }));
       dispatch(setCommentsCount({ postId, commentsCount: commentsCount + 1 }));
-      // Aggiorna anche lo stato locale dei commenti visualizzati
-      setCommentsToShow([newComment, ...commentsToShow]); */
-   
-
-      const updatedComments = [newComment, ...comments];
-      // Ordina i commenti per data decrescente
-      const sortedComments = updatedComments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      dispatch(setComments({ postId, comments: sortedComments }));
-      dispatch(setCommentsCount({ postId, commentsCount: commentsCount + 1 }));
-      // Aggiorna anche lo stato locale dei commenti visualizzati
-      setCommentsToShow(sortedComments.slice(0, commentsLoaded));
+  
+      try {
+        // Invia il nuovo commento al server
+        const response = await fetch(`http://localhost:8000/posts/${postId}/comments`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.accessToken}`
+          },
+          body: JSON.stringify(newComment)
+        });
+  
+        if (response.ok) {
+          const savedComment = await response.json();
+  
+          // Sostituisci il commento temporaneo con il commento salvato
+          const updatedCommentsAfterSave = updatedComments.map(comment =>
+            comment._id === tempId ? savedComment : comment
+          );
+  
+          // Aggiorna lo stato locale e Redux con il commento corretto
+          const sortedComments = updatedCommentsAfterSave.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          setCommentsToShow(sortedComments.slice(0, commentsLoaded));
+          dispatch(setComments({ postId, comments: sortedComments }));
+        } else {
+          console.error('Errore nel salvataggio del commento');
+        }
+      } catch (error) {
+        console.error('Errore durante l\'invio del commento:', error);
+      }
     }
     setOpenModal(false);
   };
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
 
   const handleEdit = (commentId, description) => {
     // Trova il commento che deve essere modificato e apri la modale con quei dati
