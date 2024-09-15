@@ -35,12 +35,28 @@ const Comments = ({ postId }) => {
       // Aggiorna un commento esistente
       dispatch(updateComment({ postId, updatedComment: newComment }));
     } else {
-      // Aggiungi un nuovo commento
+      /* // Aggiungi un nuovo commento
       dispatch(setComments({
         postId,
         comments: [newComment, ...comments]
       }));
+      dispatch(setCommentsCount({ postId, commentsCount: commentsCount + 1 })); */
+
+
+      /* const updatedComments = [newComment, ...comments];
+      dispatch(setComments({ postId, comments: updatedComments }));
       dispatch(setCommentsCount({ postId, commentsCount: commentsCount + 1 }));
+      // Aggiorna anche lo stato locale dei commenti visualizzati
+      setCommentsToShow([newComment, ...commentsToShow]); */
+   
+
+      const updatedComments = [newComment, ...comments];
+      // Ordina i commenti per data decrescente
+      const sortedComments = updatedComments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      dispatch(setComments({ postId, comments: sortedComments }));
+      dispatch(setCommentsCount({ postId, commentsCount: commentsCount + 1 }));
+      // Aggiorna anche lo stato locale dei commenti visualizzati
+      setCommentsToShow(sortedComments.slice(0, commentsLoaded));
     }
     setOpenModal(false);
   };
@@ -64,11 +80,20 @@ const Comments = ({ postId }) => {
 
       if (res.ok) {
         // Rimuove il commento dalla lista dei commenti
-        dispatch(setComments({
+        /*dispatch(setComments({
           postId,
           comments: comments.filter(comment => comment._id !== commentId)
         }));
         dispatch(setCommentsCount({ postId, commentsCount: commentsCount - 1 }));
+        setCommentsToShow(commentsToShow.filter(comment => comment._id !== commentId));*/
+
+
+        const updatedComments = comments.filter(comment => comment._id !== commentId);
+        const sortedComments = updatedComments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        // Rimuove il commento dalla lista dei commenti
+        dispatch(setComments({ postId, comments: sortedComments }));
+        dispatch(setCommentsCount({ postId, commentsCount: commentsCount - 1 }));
+        setCommentsToShow(sortedComments.slice(0, commentsLoaded));
       } else {
         console.error('Errore nella cancellazione del commento');
       }
@@ -84,11 +109,20 @@ const Comments = ({ postId }) => {
       try {
         const response = await fetch(`http://localhost:8000/posts/${postId}/comments`);
         if (response.ok) {
-          const commentsData = await response.json();
+          /* const commentsData = await response.json();
           dispatch(setComments({ postId, comments: commentsData }));
           dispatch(setCommentsCount({ postId, commentsCount: commentsData.length }));
 
-          setCommentsToShow(commentsData.slice(0, 3)); // Mostra solo i primi 3 commenti inizialmente
+          setCommentsToShow(commentsData.slice(0, 3)); // Mostra solo i primi 3 commenti inizialmente */
+
+
+
+          const commentsData = await response.json();
+          // Ordina i commenti per data decrescente
+          const sortedComments = commentsData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          dispatch(setComments({ postId, comments: sortedComments }));
+          dispatch(setCommentsCount({ postId, commentsCount: sortedComments.length }));
+          setCommentsToShow(sortedComments.slice(0, 3));
         } else {
           console.error('Errore nel recuperare i commenti');
         }
@@ -177,6 +211,9 @@ const Comments = ({ postId }) => {
                         <p>{comment.description}</p>
                       </div>
                       {/* Mostra i pulsanti solo se l'utente è l'autore del commento */}
+                      <div>comment.userId._id --{'>'} {comment.userId._id}</div>
+                      <div>user._id --{'>'} {user._id}</div>
+                      <div>comment.userId.displayName --{'>'} {comment.userId.displayName}</div>
                       {comment.userId._id === user._id && (
                         <div className="flex justify-end">
                           <div className="comment-reply mr-8">
