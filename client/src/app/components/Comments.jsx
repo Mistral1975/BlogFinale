@@ -43,10 +43,6 @@ const Comments = ({ postId }) => {
       setCommentsToShow(updatedComments.slice(0, commentsLoaded));
       dispatch(setComments({ postId, comments: updatedComments }));
 
-
-
-
-
       try {
         // Invia la modifica al server
         const response = await fetch(`http://localhost:8000/posts/${postId}/comments/${editComment._id}`, {
@@ -79,20 +75,7 @@ const Comments = ({ postId }) => {
       } catch (error) {
         console.error('Errore durante la modifica del commento:', error);
         // Eventuale gestione dell'errore: ripristina il commento precedente o mostra un messaggio
-      }
-
-
-
-
-
-
-
-
-
-
-
-
-      
+      }     
     } else {
       // Crea un ID temporaneo per il nuovo commento fino a quando non riceviamo una risposta dal server (Inserimento di un nuovo commento gestito come ottimistico)
       const tempId = `temp-${new Date().getTime()}`;
@@ -143,28 +126,10 @@ const Comments = ({ postId }) => {
       }
     }
     setOpenModal(false);
-  };
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
+  };  
 
   const handleEdit = (commentId, description) => {
-    // Trova il commento che deve essere modificato e apri la modale con quei dati
+    // Trova il commento che deve essere modificato e apre la modale con quei dati
     const commentToEdit = comments.find(comment => comment._id === commentId);
     handleOpenModal(commentToEdit);
   };
@@ -181,15 +146,6 @@ const Comments = ({ postId }) => {
       });
 
       if (res.ok) {
-        // Rimuove il commento dalla lista dei commenti
-        /*dispatch(setComments({
-          postId,
-          comments: comments.filter(comment => comment._id !== commentId)
-        }));
-        dispatch(setCommentsCount({ postId, commentsCount: commentsCount - 1 }));
-        setCommentsToShow(commentsToShow.filter(comment => comment._id !== commentId));*/
-
-
         const updatedComments = comments.filter(comment => comment._id !== commentId);
         const sortedComments = updatedComments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         // Rimuove il commento dalla lista dei commenti
@@ -204,21 +160,12 @@ const Comments = ({ postId }) => {
     }
   };
 
-
   // Utilizziamo useEffect per inviare una richiesta al backend per ottenere i commenti associati al post quando il componente viene montato o quando cambia il postId.
   useEffect(() => {
     const fetchComments = async () => {
       try {
         const response = await fetch(`http://localhost:8000/posts/${postId}/comments`);
         if (response.ok) {
-          /* const commentsData = await response.json();
-          dispatch(setComments({ postId, comments: commentsData }));
-          dispatch(setCommentsCount({ postId, commentsCount: commentsData.length }));
-
-          setCommentsToShow(commentsData.slice(0, 3)); // Mostra solo i primi 3 commenti inizialmente */
-
-
-
           const commentsData = await response.json();
           // Ordina i commenti per data decrescente
           const sortedComments = commentsData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -235,8 +182,6 @@ const Comments = ({ postId }) => {
 
     fetchComments();
   }, [postId, dispatch]);
-
-  //const toggleComments = () => setShowComments(!showComments);
 
   /**
     * Mostra o nascondere i commenti cambiando il valore booleano di showComments da true a false e viceversa.
@@ -313,9 +258,6 @@ const Comments = ({ postId }) => {
                         <p>{comment.description}</p>
                       </div>
                       {/* Mostra i pulsanti solo se l'utente è l'autore del commento */}
-                      <div>comment.userId._id --{'>'} {comment.userId._id}</div>
-                      <div>user._id --{'>'} {user._id}</div>
-                      <div>comment.userId.displayName --{'>'} {comment.userId.displayName}</div>
                       {comment.userId._id === user._id && (
                         <div className="flex justify-end">
                           <div className="comment-reply mr-8">
