@@ -22,14 +22,24 @@ const Comments = ({ postId }) => {
   const [openModal, setOpenModal] = useState(false);
   const [editComment, setEditComment] = useState(null); // Stato per il commento da modificare
   const user = useSelector(state => state.user); // Per verificare se l'utente è loggato
+
+  const [deleteComment, setDeleteComment] = useState(null);  // Stato per gestire l'eliminazione del commento
+  const [modalMode, setModalMode] = useState('add'); // Modalità del modale (add, edit, delete)
+
+
   const comments = useSelector(state => state.comments.comments[postId] || []);
   const commentsCount = useSelector(state => state.comments.commentsCount[postId] || 0);
 
-  const handleOpenModal = (comment = null) => {
+  /* const handleOpenModal = (comment = null) => {
     setEditComment(comment);
     setOpenModal(true);
+  }; */
+  const handleOpenModal = (comment = null, mode = 'add') => {
+    setEditComment(comment);
+    setModalMode(mode);
+    setOpenModal(true);
   };
- 
+
   const handleUpdateComments = async (newComment) => {
     if (editComment) {
       // Se stiamo modificando un commento esistente
@@ -38,7 +48,7 @@ const Comments = ({ postId }) => {
           ? { ...comment, description: newComment.description }
           : comment
       );
-  
+
       // Aggiorna immediatamente l'interfaccia utente con la modifica
       setCommentsToShow(updatedComments.slice(0, commentsLoaded));
       dispatch(setComments({ postId, comments: updatedComments }));
@@ -53,17 +63,17 @@ const Comments = ({ postId }) => {
           },
           body: JSON.stringify(newComment)
         });
-  
+
         if (response.ok) {
           const updatedCommentFromServer = await response.json();
-  
+
           // Aggiorna il commento nello store con la versione confermata dal server
           const updatedCommentsAfterSave = updatedComments.map(comment =>
             comment._id === updatedCommentFromServer._id
               ? updatedCommentFromServer
               : comment
           );
-  
+
           // Aggiorna lo stato locale e Redux con il commento modificato
           const sortedComments = updatedCommentsAfterSave.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
           setCommentsToShow(sortedComments.slice(0, commentsLoaded));
@@ -75,7 +85,7 @@ const Comments = ({ postId }) => {
       } catch (error) {
         console.error('Errore durante la modifica del commento:', error);
         // Eventuale gestione dell'errore: ripristina il commento precedente o mostra un messaggio
-      }     
+      }
     } else {
       // Crea un ID temporaneo per il nuovo commento fino a quando non riceviamo una risposta dal server (Inserimento di un nuovo commento gestito come ottimistico)
       const tempId = `temp-${new Date().getTime()}`;
@@ -88,13 +98,13 @@ const Comments = ({ postId }) => {
         },
         createdAt: new Date().toISOString() // Assegna la data corrente
       };
-  
+
       // Aggiungi subito il commento temporaneo allo stato locale
       const updatedComments = [tempComment, ...comments];
       setCommentsToShow(updatedComments.slice(0, commentsLoaded));
       dispatch(setComments({ postId, comments: updatedComments }));
       dispatch(setCommentsCount({ postId, commentsCount: commentsCount + 1 }));
-  
+
       try {
         // Invia il nuovo commento al server
         const response = await fetch(`http://localhost:8000/posts/${postId}/comments`, {
@@ -105,15 +115,15 @@ const Comments = ({ postId }) => {
           },
           body: JSON.stringify(newComment)
         });
-  
+
         if (response.ok) {
           const savedComment = await response.json();
-  
+
           // Sostituisci il commento temporaneo con il commento salvato
           const updatedCommentsAfterSave = updatedComments.map(comment =>
             comment._id === tempId ? savedComment : comment
           );
-  
+
           // Aggiorna lo stato locale e Redux con il commento corretto
           const sortedComments = updatedCommentsAfterSave.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
           setCommentsToShow(sortedComments.slice(0, commentsLoaded));
@@ -126,15 +136,54 @@ const Comments = ({ postId }) => {
       }
     }
     setOpenModal(false);
-  };  
+  };
 
-  const handleEdit = (commentId, description) => {
+  /********************************************************************************************/
+  // Funzione per confermare l'eliminazione
+  const handleConfirmDelete = async () => {
+    if (!deleteComment) return;
+
+    try {
+      const res = await fetch(`http://localhost:8000/posts/${postId}/comments/${deleteComment._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": `Bearer ${user.accessToken}`
+        }
+      });
+
+      if (res.ok) {
+        const updatedComments = comments.filter(comment => comment._id !== deleteComment._id);
+        dispatch(setComments({
+          postId,
+          comments: updatedComments
+        }));
+        dispatch(setCommentsCount({ postId, commentsCount: commentsCount - 1 }));
+        setCommentsToShow(updatedComments.slice(0, commentsLoaded));
+      } else {
+        console.error('Errore nella cancellazione del commento');
+      }
+    } catch (error) {
+      console.error('Errore durante l\'eliminazione del commento:', error);
+    }
+
+    setOpenModal(false);
+    setDeleteComment(null);
+  };
+
+  const handleDelete = (commentId) => {
+    const commentToDelete = comments.find(comment => comment._id === commentId);
+    setDeleteComment(commentToDelete);
+    handleOpenModal(commentToDelete, 'delete'); // Apri il modale in modalità "delete"
+  };
+
+  /* const handleEdit = (commentId, description) => {
     // Trova il commento che deve essere modificato e apre la modale con quei dati
     const commentToEdit = comments.find(comment => comment._id === commentId);
     handleOpenModal(commentToEdit);
-  };
+  }; */
 
-  const handleDelete = async (commentId) => {
+  /* const handleDelete = async (commentId) => {
     // Implementa la logica di eliminazione qui
     try {
       const res = await fetch(`http://localhost:8000/posts/${postId}/comments/${commentId}`, {
@@ -158,7 +207,7 @@ const Comments = ({ postId }) => {
     } catch (error) {
       console.error('Errore nella richiesta di eliminazione commento:', error);
     }
-  };
+  }; */
 
   // Utilizziamo useEffect per inviare una richiesta al backend per ottenere i commenti associati al post quando il componente viene montato o quando cambia il postId.
   useEffect(() => {
@@ -211,13 +260,16 @@ const Comments = ({ postId }) => {
             Aggiungi commento
           </button>
         )}
-        {console.log("EDITCOMMENT VALE: ", editComment)}
+        {/* {console.log("EDITCOMMENT VALE: ", editComment)} */}
         {openModal && <CommentFormModal
           postId={postId}
           closeModal={() => setOpenModal(false)}
           onUpdateComments={handleUpdateComments}
-          initialComment={editComment} // Passa il commento da modificare
-          mode={editComment ? 'edit' : 'add'} // Imposta la modalità
+          /* initialComment={editComment} // Passa il commento da modificare
+          mode={editComment ? 'edit' : 'add'} // Imposta la modalità */
+          onDeleteComment={handleConfirmDelete} // Passa la funzione per la conferma dell'eliminazione
+          initialComment={editComment || deleteComment}
+          mode={modalMode} // Imposta la modalità del modale
         />}
         <button
           onClick={toggleComments}
@@ -233,53 +285,59 @@ const Comments = ({ postId }) => {
             <p className="text-gray-500 text-center">Nessun commento disponibile</p>
           ) : (
             <>
-            <ul>
-              {commentsToShow.map(comment => (
-                <li key={comment._id}>
-                  <div className="comment">
-                    <div className="comment-img">
-                      <Link rel="nofollow noopener noreferrer" target="_blank" href={`../user/profile/${comment.userId._id}`} className="gsc-comment-author-avatar">
-                        <Image
-                          src="/static/images/4043254_avatar_elderly_grandma_nanny_icon.png"
-                          width={40}
-                          height={40}
-                          alt='userId'
-                          loading="lazy"
-                          className="mr-2 rounded-full"
-                        />
-                      </Link>
-                    </div>
-                    <div className="comment-content">
-                      <div className="comment-details">
-                        <h4 className="comment-name">{comment.userId.displayName}</h4>
-                        <span className="comment-log"><PostDate date={comment.createdAt} format="shortNumeric" /></span>
+              <ul>
+                {commentsToShow.map(comment => (
+                  <li key={comment._id}>
+                    <div className="comment">
+                      <div className="comment-img">
+                        <Link href={`../user/profile/${comment.userId._id}`} className="gsc-comment-author-avatar">
+                          <Image
+                            src="/static/images/4043254_avatar_elderly_grandma_nanny_icon.png"
+                            width={40}
+                            height={40}
+                            alt='userId'
+                            loading="lazy"
+                            className="mr-2 rounded-full"
+                          />
+                        </Link>
                       </div>
-                      <div className="flex w-544 comment-desc">
-                        <p>{comment.description}</p>
-                      </div>
-                      {/* Mostra i pulsanti solo se l'utente è l'autore del commento */}
-                      {comment.userId._id === user._id && (
-                        <div className="flex justify-end">
-                          <div className="comment-reply mr-8">
-                            <button onClick={() => handleEdit(comment._id, comment.description)} className="text-blue-500 cursor-text">Modifica</button>
-                          </div>
-                          <div className="comment-report mr-2">
-                            <button onClick={() => handleDelete(comment._id)} className="text-red-500 cursor-text">Elimina</button>
-                          </div>
+                      <div className="comment-content">
+                        <div className="comment-details">
+                          <h4 className="comment-name">{comment.userId.displayName}</h4>
+                          <span className="comment-log"><PostDate date={comment.createdAt} format="shortNumeric" /></span>
                         </div>
-                      )}
+                        <div className="flex w-544 comment-desc">
+                          <p>{comment.description}</p>
+                        </div>
+                        {/* Mostra i pulsanti solo se l'utente è l'autore del commento */}
+                        {comment.userId._id === user._id && (
+                          <div className="flex justify-end">
+                            {/* <div className="comment-reply mr-8">
+                              <button onClick={() => handleEdit(comment._id, comment.description)} className="text-blue-500 cursor-text">Modifica</button>
+                            </div>
+                            <div className="comment-report mr-2">
+                              <button onClick={() => handleDelete(comment._id)} className="text-red-500 cursor-text">Elimina</button>
+                            </div> */}
+                            <div className="comment-reply mr-8">
+                              <button onClick={() => handleOpenModal(comment, 'edit')} className="text-blue-500 cursor-text">Modifica</button>
+                            </div>
+                            <div className="comment-report mr-2">
+                              <button onClick={() => handleDelete(comment._id)} className="text-red-500 cursor-text">Elimina</button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-            {commentsLoaded < commentsCount && (
-              <div className="text-center mt-4">
-                <button onClick={loadMoreComments} className="text-blue-500 hover:underline">
-                  Carica altri commenti
-                </button>
-              </div>
-            )}
+                  </li>
+                ))}
+              </ul>
+              {commentsLoaded < commentsCount && (
+                <div className="text-center mt-4">
+                  <button onClick={loadMoreComments} className="text-blue-500 hover:underline">
+                    Carica altri commenti
+                  </button>
+                </div>
+              )}
             </>
           )}
         </section>

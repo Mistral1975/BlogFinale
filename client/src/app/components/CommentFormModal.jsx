@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import "../css/commentform.module.css";
 
-const CommentFormModal = ({ postId, closeModal, onUpdateComments, initialComment = null, mode = 'add' }) => {
+const CommentFormModal = ({ postId, closeModal, onUpdateComments, onDeleteComment, initialComment = null, mode = 'add' }) => {
 
     console.log("initialComment: ", initialComment)
 
@@ -50,12 +50,10 @@ const CommentFormModal = ({ postId, closeModal, onUpdateComments, initialComment
         let formIsValid = true;
 
         if (newComment.description === '') {
-            setValidationErrors(prevValue => {
-                return {
-                    ...prevValue,
-                    description: 'Il commento non può essere vuoto'
-                }
-            })
+            setValidationErrors(prevValue => ({
+                ...prevValue,
+                description: 'Il commento non può essere vuoto'
+            }));
             formIsValid = false;
         }
 
@@ -76,7 +74,6 @@ const CommentFormModal = ({ postId, closeModal, onUpdateComments, initialComment
                         'Content-Type': 'application/json',
                         "Authorization": `bearer ${user.accessToken}`
                     },
-                    //body: JSON.stringify({ description: comment }),
                     body: JSON.stringify(newComment),
                 });
 
@@ -95,56 +92,77 @@ const CommentFormModal = ({ postId, closeModal, onUpdateComments, initialComment
         }
     }
 
-    console.log("newComment : ", newComment)
-    console.log("validationErrors : ", validationErrors)
-
-    // Controlla se l'utente loggato è l'autore del commento
-    const isAuthor = initialComment && initialComment.userId._id === user._id;
-    console.log("initialComment: ", initialComment)
-    console.log("user: ", user)
-
-    return (
-        <>
+    // Modal per confermare l'eliminazione
+    if (mode === 'delete') {
+        return (
             <div className="modalBackground">
                 <div className="containerLogin">
                     <div className="titleCloseBtn">
                         <button onClick={() => closeModal(false)}> X </button>
                     </div>
                     <div className="headerLogin">
-                        <div className="text">{mode === 'edit' ? 'Modifica Commento' : 'Aggiungi un Commento'}</div>
+                        <div className="text">Conferma Eliminazione</div>
                         <div className="underline"></div>
                     </div>
                     <div className="inputs">
-                        <div className="inputs">
-                            <textarea
-                                id="description"
-                                name="description"
-                                //onChange={(e) => handleChange(e)}
-                                onChange={handleChange}
-                                value={newComment.description}
-                                rows="4"
-                                className="w-full p-2 border border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-                                placeholder="Scrivi il tuo commento..."
-                                required
-                            />
-                            {validationErrors.description && <div className="error-message">{validationErrors.description}</div>}
-                        </div>
+                        <p>Sei sicuro di voler eliminare questo commento?</p>
+                        <p className="italic">"{initialComment?.description}"</p>
                     </div>
-
                     {message &&
                         <div className={message.type === "info" ? "message" : "error-message"}>{message.text}</div>
                     }
-         
-                        <div className="submit-container">
-                            <div className="submit gray" onClick={() => closeModal()}>Annulla</div>
-                            <div className="submit" onClick={handleSubmit}>Invia</div>
-                        </div>
-                    
+                    <div className="submit-container">
+                        <div className="submit gray" onClick={() => closeModal()}>Annulla</div>
+                        <div className="submit danger" onClick={onDeleteComment}>Conferma</div>
+                    </div>
                 </div>
             </div>
+        );
+    }
 
+    /* console.log("newComment : ", newComment)
+    console.log("validationErrors : ", validationErrors)
 
-        </>
+    // Controlla se l'utente loggato è l'autore del commento
+    const isAuthor = initialComment && initialComment.userId._id === user._id;
+    console.log("initialComment: ", initialComment)
+    console.log("user: ", user) */
+
+    // Modal per aggiungere o modificare un commento
+    return (
+        <div className="modalBackground">
+            <div className="containerLogin">
+                <div className="titleCloseBtn">
+                    <button onClick={() => closeModal(false)}> X </button>
+                </div>
+                <div className="headerLogin">
+                    <div className="text">{mode === 'edit' ? 'Modifica Commento' : 'Aggiungi un Commento'}</div>
+                    <div className="underline"></div>
+                </div>
+                <div className="inputs">
+                    <textarea
+                        id="description"
+                        name="description"
+                        onChange={handleChange}
+                        value={newComment.description}
+                        rows="4"
+                        className="w-full p-2 border border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
+                        placeholder="Scrivi il tuo commento..."
+                        required
+                    />
+                    {validationErrors.description && <div className="error-message">{validationErrors.description}</div>}
+                </div>
+
+                {message &&
+                    <div className={message.type === "info" ? "message" : "error-message"}>{message.text}</div>
+                }
+
+                <div className="submit-container">
+                    <div className="submit gray" onClick={() => closeModal()}>Annulla</div>
+                    <div className="submit" onClick={handleSubmit}>Invia</div>
+                </div>
+            </div>
+        </div>
     );
 };
 
