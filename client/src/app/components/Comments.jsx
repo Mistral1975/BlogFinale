@@ -1,13 +1,13 @@
+// components/Comments.jsx
+
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { setComments, setCommentsCount, addComment, updateComment } from '../store/commentsSlice';
-
 import Link from 'next/link';
 import Image from './Image';
 import PostDate from './PostDate';
 import "../css/comments.css";
 import Like from './Like';
-
 // Importa il componente modale
 import CommentFormModal from './CommentFormModal';
 
@@ -15,25 +15,16 @@ const Comments = ({ postId }) => {
 
   const dispatch = useDispatch();
   const [showComments, setShowComments] = useState(false); // Stato per gestire la visibilità dei commenti
-
   const [commentsToShow, setCommentsToShow] = useState([]); // Stato per gestire i commenti visualizzati progressivamente
   const [commentsLoaded, setCommentsLoaded] = useState(3);  // Stato per gestire quanti commenti sono caricati inizialmente
-
   const [openModal, setOpenModal] = useState(false);
   const [editComment, setEditComment] = useState(null); // Stato per il commento da modificare
   const user = useSelector(state => state.user); // Per verificare se l'utente è loggato
-
   const [deleteComment, setDeleteComment] = useState(null);  // Stato per gestire l'eliminazione del commento
   const [modalMode, setModalMode] = useState('add'); // Modalità del modale (add, edit, delete)
-
-
   const comments = useSelector(state => state.comments.comments[postId] || []);
   const commentsCount = useSelector(state => state.comments.commentsCount[postId] || 0);
 
-  /* const handleOpenModal = (comment = null) => {
-    setEditComment(comment);
-    setOpenModal(true);
-  }; */
   const handleOpenModal = (comment = null, mode = 'add') => {
     setEditComment(comment);
     setModalMode(mode);
@@ -138,7 +129,6 @@ const Comments = ({ postId }) => {
     setOpenModal(false);
   };
 
-  /********************************************************************************************/
   // Funzione per confermare l'eliminazione
   const handleConfirmDelete = async () => {
     if (!deleteComment) return;
@@ -176,38 +166,6 @@ const Comments = ({ postId }) => {
     setDeleteComment(commentToDelete);
     handleOpenModal(commentToDelete, 'delete'); // Apri il modale in modalità "delete"
   };
-
-  /* const handleEdit = (commentId, description) => {
-    // Trova il commento che deve essere modificato e apre la modale con quei dati
-    const commentToEdit = comments.find(comment => comment._id === commentId);
-    handleOpenModal(commentToEdit);
-  }; */
-
-  /* const handleDelete = async (commentId) => {
-    // Implementa la logica di eliminazione qui
-    try {
-      const res = await fetch(`http://localhost:8000/posts/${postId}/comments/${commentId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          "Authorization": `Bearer ${user.accessToken}`
-        }
-      });
-
-      if (res.ok) {
-        const updatedComments = comments.filter(comment => comment._id !== commentId);
-        const sortedComments = updatedComments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        // Rimuove il commento dalla lista dei commenti
-        dispatch(setComments({ postId, comments: sortedComments }));
-        dispatch(setCommentsCount({ postId, commentsCount: commentsCount - 1 }));
-        setCommentsToShow(sortedComments.slice(0, commentsLoaded));
-      } else {
-        console.error('Errore nella cancellazione del commento');
-      }
-    } catch (error) {
-      console.error('Errore nella richiesta di eliminazione commento:', error);
-    }
-  }; */
 
   // Utilizziamo useEffect per inviare una richiesta al backend per ottenere i commenti associati al post quando il componente viene montato o quando cambia il postId.
   useEffect(() => {
@@ -251,7 +209,7 @@ const Comments = ({ postId }) => {
   return (
     <>
       <div className="pb-6 pt-6 flex justify-between text-gray-700 dark:text-gray-300" id="comment">
-        <Like />
+        <Like postId={postId} />
         {user.email && ( // Mostra il bottone solo se l'utente è loggato
           <button
             onClick={() => handleOpenModal()}
@@ -265,8 +223,6 @@ const Comments = ({ postId }) => {
           postId={postId}
           closeModal={() => setOpenModal(false)}
           onUpdateComments={handleUpdateComments}
-          /* initialComment={editComment} // Passa il commento da modificare
-          mode={editComment ? 'edit' : 'add'} // Imposta la modalità */
           onDeleteComment={handleConfirmDelete} // Passa la funzione per la conferma dell'eliminazione
           initialComment={editComment || deleteComment}
           mode={modalMode} // Imposta la modalità del modale
@@ -312,12 +268,6 @@ const Comments = ({ postId }) => {
                         {/* Mostra i pulsanti solo se l'utente è l'autore del commento */}
                         {comment.userId._id === user._id && (
                           <div className="flex justify-end">
-                            {/* <div className="comment-reply mr-8">
-                              <button onClick={() => handleEdit(comment._id, comment.description)} className="text-blue-500 cursor-text">Modifica</button>
-                            </div>
-                            <div className="comment-report mr-2">
-                              <button onClick={() => handleDelete(comment._id)} className="text-red-500 cursor-text">Elimina</button>
-                            </div> */}
                             <div className="comment-reply mr-8">
                               <button onClick={() => handleOpenModal(comment, 'edit')} className="text-blue-500 cursor-text">Modifica</button>
                             </div>
