@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addPost } from "../store/postsSlice";
-import "../css/postform.module.css";
+//import "../css/postform.module.css";
 
 const PostForm = ({ closeModal }) => {
     const user = useSelector(state => state.user);
@@ -112,7 +112,7 @@ const PostForm = ({ closeModal }) => {
                     body: JSON.stringify(newPost),
                 });
 
-                 if (res.ok) {
+                if (res.ok) {
                     dispatch(addPost(await res.json()));
 
                     setNewPost({
