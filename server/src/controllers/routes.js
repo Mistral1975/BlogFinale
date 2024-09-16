@@ -28,7 +28,7 @@ import normalizeAllTags from "./normalizeAllTags.js";
 
 import modificaCommenti from "./modificaCommenti.js";
 
-import toggleLike from "./toggleLike.js";
+import toggleLike from "./toggleLike.js"; // Importiamo il controller per gestire il toggle dei like
 
 
 const setup = app => {
@@ -51,7 +51,7 @@ const setup = app => {
     //app.post('/posts/:id/like', checkAuthorizationMiddleware, idParamValidator, likePost); // Aggiungi like
     //app.post('/posts/:id/unlike', checkAuthorizationMiddleware, idParamValidator, unlikePost); // Rimuovi like
 
-    app.post('/posts/:id/like', checkAuthorizationMiddleware, toggleLike);
+    app.post('/posts/:id/like', checkAuthorizationMiddleware, toggleLike); // Aggiungi o rimuovi il like
 
     /********** COMMENTI **********/
     app.post('/posts/:id/comments', checkAuthorizationMiddleware, addCommentValidator, addComment); //aggiungere commenti

@@ -24,7 +24,6 @@ const CommentFormModal = ({ postId, closeModal, onUpdateComments, onDeleteCommen
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        //console.log(`Sto scrivendo ${value} su ${name}`)
 
         // Gestione facoltativa degli errori di convalida
         setValidationErrors(
@@ -119,14 +118,6 @@ const CommentFormModal = ({ postId, closeModal, onUpdateComments, onDeleteCommen
             </div>
         );
     }
-
-    /* console.log("newComment : ", newComment)
-    console.log("validationErrors : ", validationErrors)
-
-    // Controlla se l'utente loggato è l'autore del commento
-    const isAuthor = initialComment && initialComment.userId._id === user._id;
-    console.log("initialComment: ", initialComment)
-    console.log("user: ", user) */
 
     // Modal per aggiungere o modificare un commento
     return (
