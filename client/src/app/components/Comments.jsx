@@ -256,6 +256,7 @@ const Comments = ({ postId }) => {
           <button
             onClick={() => handleOpenModal()}
             className="text-blue-500 hover:underline"
+            style={{ userSelect: 'none' }}
           >
             Aggiungi commento
           </button>
@@ -274,6 +275,7 @@ const Comments = ({ postId }) => {
         <button
           onClick={toggleComments}
           className="text-blue-500 hover:underline"
+          style={{ userSelect: 'none' }}
         >
           Commenti ({commentsCount})
         </button>
