@@ -1,5 +1,3 @@
-// src/services/activityService.js
-
 import activityRepo from '../repository/activityRepository.js'; //importiamo tutto il modulo
 import { normalizeTags } from '../utils/utils.js';
 
@@ -103,36 +101,9 @@ const modificaCommenti = async () => {
     return await activityRepo.modificaCommenti();
 }
 
-/* const toggleLike = async (id, userId) => {
-    return await activityRepo.toggleLike(id, userId);
-} */
 const toggleLike = async (id, userId) => {
-    const post = await activityRepo.findPostById(id); // Recuperiamo il post dal repository
-
-    if (!post) {
-        throw new Error('Post non trovato');
-    }
-
-    console.log('Post trovato:', post.title); // Verifica se il post viene trovato
-
-    if (post.userId.toString() === userId) {
-        throw new Error('Il proprietario del post non può mettere like al proprio post');
-    }
-
-    const likeIndex = post.likes.indexOf(userId);
-
-    if (likeIndex === -1) {
-        // L'utente non ha ancora messo like, quindi aggiungiamo il suo ID
-        post.likes.push(userId);
-    } else {
-        // L'utente ha già messo like, quindi rimuoviamo il suo ID
-        post.likes.splice(likeIndex, 1);
-    }
-
-    console.log('Stato del like aggiornato:', post.likes); // Verifica se l'array di likes è stato aggiornato correttamente
-
-    return await post.save(); // Salviamo il post con il nuovo stato dei like
-};
+    return await activityRepo.toggleLike(id, userId);
+}
 
 export default {
     addPost,
