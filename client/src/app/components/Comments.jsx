@@ -126,6 +126,7 @@ const Comments = ({ postId }) => {
           <button
             onClick={() => handleOpenModal()}
             className="text-blue-500 hover:underline"
+            style={{ userSelect: 'none' }}
           >
             Aggiungi commento
           </button>
@@ -141,6 +142,7 @@ const Comments = ({ postId }) => {
         <button
           onClick={toggleComments}
           className="text-blue-500 hover:underline"
+          style={{ userSelect: 'none' }}
         >
           Commenti ({commentsCount})
         </button>
@@ -152,53 +154,53 @@ const Comments = ({ postId }) => {
             <p className="text-gray-500 text-center">Nessun commento disponibile</p>
           ) : (
             <>
-            <ul>
-              {commentsToShow.map(comment => (
-                <li key={comment._id}>
-                  <div className="comment">
-                    <div className="comment-img">
-                      <Link rel="nofollow noopener noreferrer" target="_blank" href={`../user/profile/${comment.userId._id}`} className="gsc-comment-author-avatar">
-                        <Image
-                          src="/static/images/4043254_avatar_elderly_grandma_nanny_icon.png"
-                          width={40}
-                          height={40}
-                          alt='userId'
-                          loading="lazy"
-                          className="mr-2 rounded-full"
-                        />
-                      </Link>
-                    </div>
-                    <div className="comment-content">
-                      <div className="comment-details">
-                        <h4 className="comment-name">{comment.userId.displayName}</h4>
-                        <span className="comment-log"><PostDate date={comment.createdAt} format="shortNumeric" /></span>
+              <ul>
+                {commentsToShow.map(comment => (
+                  <li key={comment._id}>
+                    <div className="comment">
+                      <div className="comment-img">
+                        <Link rel="nofollow noopener noreferrer" target="_blank" href={`../user/profile/${comment.userId._id}`} className="gsc-comment-author-avatar">
+                          <Image
+                            src="/static/images/4043254_avatar_elderly_grandma_nanny_icon.png"
+                            width={40}
+                            height={40}
+                            alt='userId'
+                            loading="lazy"
+                            className="mr-2 rounded-full"
+                          />
+                        </Link>
                       </div>
-                      <div className="flex w-544 comment-desc">
-                        <p>{comment.description}</p>
-                      </div>
-                      {/* Mostra i pulsanti solo se l'utente è l'autore del commento */}
-                      {comment.userId._id === user._id && (
-                        <div className="flex justify-end">
-                          <div className="comment-reply mr-8">
-                            <button onClick={() => handleEdit(comment._id, comment.description)} className="text-blue-500 cursor-text">Modifica</button>
-                          </div>
-                          <div className="comment-report mr-2">
-                            <button onClick={() => handleDelete(comment._id)} className="text-red-500 cursor-text">Elimina</button>
-                          </div>
+                      <div className="comment-content">
+                        <div className="comment-details">
+                          <h4 className="comment-name">{comment.userId.displayName}</h4>
+                          <span className="comment-log"><PostDate date={comment.createdAt} format="shortNumeric" /></span>
                         </div>
-                      )}
+                        <div className="flex w-544 comment-desc">
+                          <p>{comment.description}</p>
+                        </div>
+                        {/* Mostra i pulsanti solo se l'utente è l'autore del commento */}
+                        {comment.userId._id === user._id && (
+                          <div className="flex justify-end">
+                            <div className="comment-reply mr-8">
+                              <button onClick={() => handleEdit(comment._id, comment.description)} className="text-blue-500 cursor-text">Modifica</button>
+                            </div>
+                            <div className="comment-report mr-2">
+                              <button onClick={() => handleDelete(comment._id)} className="text-red-500 cursor-text">Elimina</button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-            {commentsLoaded < commentsCount && (
-              <div className="text-center mt-4">
-                <button onClick={loadMoreComments} className="text-blue-500 hover:underline">
-                  Carica altri commenti
-                </button>
-              </div>
-            )}
+                  </li>
+                ))}
+              </ul>
+              {commentsLoaded < commentsCount && (
+                <div className="text-center mt-4">
+                  <button onClick={loadMoreComments} className="text-blue-500 hover:underline">
+                    Carica altri commenti
+                  </button>
+                </div>
+              )}
             </>
           )}
         </section>
