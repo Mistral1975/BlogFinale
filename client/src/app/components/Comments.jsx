@@ -256,7 +256,6 @@ const Comments = ({ postId }) => {
           <button
             onClick={() => handleOpenModal()}
             className="text-blue-500 hover:underline"
-            style={{ userSelect: 'none' }}
           >
             Aggiungi commento
           </button>
@@ -275,7 +274,6 @@ const Comments = ({ postId }) => {
         <button
           onClick={toggleComments}
           className="text-blue-500 hover:underline"
-          style={{ userSelect: 'none' }}
         >
           Commenti ({commentsCount})
         </button>
@@ -292,11 +290,7 @@ const Comments = ({ postId }) => {
                   <li key={comment._id}>
                     <div className="comment">
                       <div className="comment-img">
-<<<<<<< HEAD
                         <Link href={`../user/profile/${comment.userId._id}`} className="gsc-comment-author-avatar">
-=======
-                        <Link rel="nofollow noopener noreferrer" target="_blank" href={`../user/profile/${comment.userId._id}`} className="gsc-comment-author-avatar">
->>>>>>> 03d27553ee7b170f7e3ab2f035b31ab6fb675c0a
                           <Image
                             src="/static/images/4043254_avatar_elderly_grandma_nanny_icon.png"
                             width={40}
@@ -318,7 +312,6 @@ const Comments = ({ postId }) => {
                         {/* Mostra i pulsanti solo se l'utente è l'autore del commento */}
                         {comment.userId._id === user._id && (
                           <div className="flex justify-end">
-<<<<<<< HEAD
                             {/* <div className="comment-reply mr-8">
                               <button onClick={() => handleEdit(comment._id, comment.description)} className="text-blue-500 cursor-text">Modifica</button>
                             </div>
@@ -327,10 +320,6 @@ const Comments = ({ postId }) => {
                             </div> */}
                             <div className="comment-reply mr-8">
                               <button onClick={() => handleOpenModal(comment, 'edit')} className="text-blue-500 cursor-text">Modifica</button>
-=======
-                            <div className="comment-reply mr-8">
-                              <button onClick={() => handleEdit(comment._id, comment.description)} className="text-blue-500 cursor-text">Modifica</button>
->>>>>>> 03d27553ee7b170f7e3ab2f035b31ab6fb675c0a
                             </div>
                             <div className="comment-report mr-2">
                               <button onClick={() => handleDelete(comment._id)} className="text-red-500 cursor-text">Elimina</button>

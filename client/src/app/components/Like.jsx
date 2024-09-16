@@ -20,12 +20,7 @@ function Like() {
     return (
         <div onClick={handleClick} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
             <AiFillLike color={liked ? "aqua" : "gray"} size="25" />
-            <span style={{
-                marginLeft: '10px',
-                fontSize: '24px',
-                userSelect: 'none'
-            }}>{likeCount}
-            </span>
+            <span style={{ marginLeft: '10px', fontSize: '24px' }}>{likeCount}</span>
         </div>
     )
 }
