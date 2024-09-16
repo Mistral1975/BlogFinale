@@ -4,7 +4,7 @@ body {
     background-color: rgba(3, 7, 18, 1);
     color: rgba(255, 255, 255, 1);
     padding-left: calc(100vw - 100%);
-    //padding-left: 0;
+    padding-left: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale
 }
@@ -26,7 +26,7 @@ section {
 .container {
     display: flex;
     width: 100%;
-    height:100vh;
+    height: 100vh;
     flex-direction: column;
     justify-content: space-between;
     font-family: "Space Grotesk", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -2612,6 +2612,7 @@ input:-webkit-autofill:focus {
     .container {
         max-width: 640px
     }
+
     .sm\:ml-3 {
         margin-left: .75rem
     }
@@ -2702,6 +2703,7 @@ input:-webkit-autofill:focus {
     .container {
         max-width: 768px
     }
+
     .md\:-mx-8 {
         margin-left: -2rem;
         margin-right: -2rem
@@ -2795,6 +2797,7 @@ input:-webkit-autofill:focus {
     .container {
         max-width: 1024px
     }
+
     .lg\:h-48 {
         height: 12rem
     }
@@ -2804,6 +2807,7 @@ input:-webkit-autofill:focus {
     .container {
         max-width: 1280px
     }
+
     .xl\:col-span-2 {
         grid-column: span 2/span 2
     }
@@ -2966,6 +2970,7 @@ input:-webkit-autofill:focus {
     .container {
         max-width: 1536px
     }
+
     .\32xl\:-mx-24 {
         margin-left: -6rem;
         margin-right: -6rem
