@@ -45,7 +45,7 @@ const getInitials = (name, email) => {
     return 'NN'; // Se non c'è nulla, ritorna 'NN' per "No Name"
 };
 
-const AvatarV3 = ({ user }) => {
+const Avatar = ({ user }) => {
     const { name, email } = user;
     const initials = getInitials(name, email); // Calcola le iniziali
     const avatarKey = name || email; // Usiamo name o email come base per il colore
@@ -73,4 +73,4 @@ const AvatarV3 = ({ user }) => {
     );
 };
 
-export default AvatarV3;
+export default Avatar;

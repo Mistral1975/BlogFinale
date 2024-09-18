@@ -53,9 +53,9 @@ const postsSlice = createSlice({
             state.singlePost = action.payload.singlePost;
             state.prevPost = action.payload.prevPost;
             state.prevPost = action.payload.nextPost;
-            console.log("state.singlePost ----> ", state.singlePost)
-            console.log("state.prevPost ----> ", state.prevPost)
-            console.log("state.nextPost ----> ", state.nextPost)
+            //console.log("state.singlePost ----> ", state.singlePost)
+            //console.log("state.prevPost ----> ", state.prevPost)
+            //console.log("state.nextPost ----> ", state.nextPost)
         },
         addPost: (state, action) => {
             state.postsList.push(action.payload);

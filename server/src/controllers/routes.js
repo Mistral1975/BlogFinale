@@ -62,7 +62,7 @@ const setup = app => {
     /********** TAGS **********/
     app.patch('/normalizetags', normalizeAllTags); // normalizza tutti i tags presenti nei post
 
-    app.patch('/modificacommenti', modificaCommenti); // normalizza tutti i tags presenti nei post
+    app.patch('/modificacommenti', modificaCommenti); 
 
     app.use((err, req, res, next) => {
         if (err && err.error && err.error.isJoi) {

@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { setComments, setCommentsCount, addComment, updateComment } from '../store/commentsSlice';
 import Link from 'next/link';
-import Image from './Image';
+//import Image from './Image';
+import Avatar from './Avatar';
 import PostDate from './PostDate';
 import "../css/comments.css";
 import Like from './Like';
@@ -247,14 +248,18 @@ const Comments = ({ postId }) => {
                     <div className="comment">
                       <div className="comment-img">
                         <Link href={`../user/profile/${comment.userId._id}`} className="gsc-comment-author-avatar">
-                          <Image
+                          {/* <Image
                             src="/static/images/4043254_avatar_elderly_grandma_nanny_icon.png"
                             width={40}
                             height={40}
                             alt='userId'
                             loading="lazy"
                             className="mr-2 rounded-full"
-                          />
+                          /> */}
+                          {/* <Avatar user={user} /> */}
+                          {/* Utilizza Avatar per mostrare un avatar unico per ogni utente */}
+                          <Avatar user={comment.userId} />
+                          {console.log("comment.userId -> ", comment.userId)}
                         </Link>
                       </div>
                       <div className="comment-content">
