@@ -1,5 +1,4 @@
 import React from 'react';
-import styles from "../css/avatar.module.css";
 
 const Avatar = ({ displayName }) => {
     // Funzione per ottenere le iniziali dal displayName
@@ -49,10 +48,10 @@ const Avatar = ({ displayName }) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderRadius: '50%',
-                width: '50px',
-                height: '50px',
+                width: '32px',
+                height: '32px',
                 fontWeight: 'bold',
-                fontSize: '1.5rem'
+                fontSize: '1rem'
             }}
         >
             <span className="initials">{getInitials(displayName)}</span>

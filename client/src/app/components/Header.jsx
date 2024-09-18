@@ -5,7 +5,9 @@ import { useState } from 'react';
 import { logout } from '../store/userSlice';
 import Login from './LoginSignup/Login';
 import Signup from './LoginSignup/Signup';
-import Avatar from './Avatar';
+//import Avatar from './Avatar';
+import AvatarV2 from './AvatarV2';
+//import AvatarV3 from './AvatarV3';
 
 const Header = () => {
   const user = useSelector(state => state.user);
@@ -49,7 +51,9 @@ const Header = () => {
 
         {user.name && (
           <div className="flex items-center space-x-4">
-            <Avatar displayName={user.name} />
+            {/* <Avatar displayName={user.name} /> */}
+            <AvatarV2 user={user} />
+            {/* <AvatarV3 user={user} /> */}
             <button className="logoutBtn hover:text-primary-500" onClick={handleLogout}>
               Logout
             </button>
