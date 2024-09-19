@@ -33,7 +33,7 @@ const getInitials = (name, email) => {
 };
 
 const Avatar = ({ user = {} }) => { // Predefinisco un oggetto vuoto per prevenire errori di destructuring
-    console.log("USER -> ", user)
+    //console.log("USER -> ", user)
     let { name = '', email = '' } = user; // Il valore predefinito è una stringa vuota se è null o undefined
     let { _id = '', displayName = '' } = user; // Il valore predefinito è una stringa vuota se è null o undefined
     //console.log("_id -> ", _id)

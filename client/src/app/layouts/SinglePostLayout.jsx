@@ -84,8 +84,7 @@ const SinglePostLayout = () => {
   if (!singlePost) {
     return <div>Post non trovato</div>;
   }
-
-
+  
   return (
     <>
       <Header />
@@ -112,13 +111,6 @@ const SinglePostLayout = () => {
                 <dd>
                   <ul className="flex flex-wrap justify-center gap-4 sm:space-x-12 xl:block xl:space-x-0 xl:space-y-8">
                     <li className="flex items-center space-x-2" key={singlePost.userId._id}>
-                      {/* <Image
-                        src="/static/images/4043254_avatar_elderly_grandma_nanny_icon.png"
-                        width={38}
-                        height={38}
-                        alt="avatar"
-                        className="h-10 w-10 rounded-full"
-                      /> */}
                       <Avatar user={user} />
                       <dl className="whitespace-nowrap text-sm font-medium leading-5">
                         <dt className="sr-only">Name</dt>
