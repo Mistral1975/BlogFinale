@@ -111,7 +111,7 @@ const SinglePostLayout = () => {
                 <dd>
                   <ul className="flex flex-wrap justify-center gap-4 sm:space-x-12 xl:block xl:space-x-0 xl:space-y-8">
                     <li className="flex items-center space-x-2" key={singlePost.userId._id}>
-                      <Avatar user={user} />
+                      <Avatar user={singlePost.userId} />
                       <dl className="whitespace-nowrap text-sm font-medium leading-5">
                         <dt className="sr-only">Name</dt>
                         <dd className="text-gray-900 dark:text-gray-100">{singlePost.userId.displayName}</dd>

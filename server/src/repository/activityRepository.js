@@ -82,13 +82,13 @@ const addComment = async (id, content) => {
         updatedAt: Date.now()
     });
 
-    return await comment.save(); // Salva il documento commento
+    const savedComment = await comment.save(); // Salva il commento
 
+    // Popoliamo il campo userId con displayName e email
+    const populatedComment = await savedComment.populate('userId', 'displayName email');
 
-    //return comment; // Restituisci il commento creato (facoltativo)
-
-    //return await new commentSchema(content).save();
-
+    // Ritorna il commento popolato con le informazioni dell'utente
+    return populatedComment;
 }
 
 const updateComments = async (commentId, content) => {

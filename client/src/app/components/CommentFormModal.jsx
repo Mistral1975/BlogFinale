@@ -1,3 +1,5 @@
+// components/CommentFormModal.jsx
+
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import "../css/commentform.module.css";
@@ -67,13 +69,19 @@ const CommentFormModal = ({ postId, closeModal, onUpdateComments, onDeleteCommen
 
                 const method = mode === 'edit' ? 'PATCH' : 'POST';
 
+                // Crea il payload per la richiesta
+                const payload = {
+                    description: newComment.description
+                    // Non includere campi non previsti come userId, _id, createdAt, updatedAt, __v
+                };
+
                 const res = await fetch(url, {
                     method: method,
                     headers: {
                         'Content-Type': 'application/json',
-                        "Authorization": `bearer ${user.accessToken}`
+                        "Authorization": `Bearer ${user.accessToken}`
                     },
-                    body: JSON.stringify(newComment),
+                    body: JSON.stringify(payload),
                 });
 
                 if (res.ok) {

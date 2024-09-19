@@ -98,6 +98,12 @@ const Comments = ({ postId }) => {
       dispatch(setCommentsCount({ postId, commentsCount: commentsCount + 1 }));
 
       try {
+        // Crea il payload per la richiesta
+        const payload = {
+          description: newComment.description
+          // Non includere campi non previsti come userId, _id, createdAt, updatedAt, __v
+        };
+
         // Invia il nuovo commento al server
         const response = await fetch(`http://localhost:8000/posts/${postId}/comments`, {
           method: 'POST',
@@ -105,8 +111,9 @@ const Comments = ({ postId }) => {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${user.accessToken}`
           },
-          body: JSON.stringify(newComment)
+          body: JSON.stringify(payload)
         });
+
 
         if (response.ok) {
           const savedComment = await response.json();

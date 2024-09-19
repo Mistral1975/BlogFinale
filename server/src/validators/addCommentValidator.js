@@ -7,6 +7,8 @@ export default [
     validator.body(
         joi.object().keys({
             description: joi.string().required(), // Descrizione del Commento
-        })
+            userId: joi.string().optional(), // Permettiamo userId (verrà aggiunto dal backend)
+            postId: joi.string().optional(), // Permettiamo postId (verrà aggiunto dal backend)
+        }) // Non permettiamo altri campi come _id, createdAt, updatedAt, __v
     ),
-]
+];
