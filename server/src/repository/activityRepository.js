@@ -1,3 +1,5 @@
+// src/repository/activityRepository.js
+
 import activitySchema from "../schema/activitySchema.js";
 import commentSchema from "../schema/commentSchema.js";
 import { normalizeTags } from '../utils/utils.js';
@@ -212,32 +214,37 @@ const unlikePost = async (id, userId) => {
     return await post.save(); // salva il documento nel database. Se il documento è nuovo, viene inserito. Se il documento esiste già, viene aggiornato con le modifiche effettuate.
 }
 
+const findPostById = async (id) => {
+    try {
+        const post = await activitySchema.findById(id).populate('userId', 'displayName email');  // Popola i dettagli dell'utente
+        if (!post) throw new Error('Post non trovato nel database');
+        return post;
+    } catch (err) {
+        console.error('Errore durante il recupero del post:', err.message);
+        throw err;
+    }
+};
+
 const toggleLike = async (id, userId) => {
-    const post = await activitySchema.findOne({ _id: id });
+    const post = await findPostById(id);  // Assicuriamoci di popolare i dettagli dell'utente qui
 
     if (!post) {
         throw new Error('Post non trovato');
     }
 
-    if (post.userId.toString() === userId) {
-        throw new Error('Il proprietario del post non può mettere like al proprio post');
-    }
-
     const likeIndex = post.likes.indexOf(userId);
 
-    //console.log(likeIndex)
-
     if (likeIndex === -1) {
-        // L'utente non ha ancora messo like, quindi aggiungiamo il suo ID
-        post.likes.push(userId);
+        post.likes.push(userId); // Aggiungiamo il like
     } else {
-        // L'utente ha già messo like, quindi rimuoviamo il suo ID
-        post.likes.splice(likeIndex, 1);
+        post.likes.splice(likeIndex, 1); // Rimuoviamo il like
     }
-    //console.log(post.likes)
 
-    return await post.save();
-}
+    const updatedPost = await post.save();  // Salviamo il post aggiornato
+
+    // Popola i dettagli completi dell'utente dopo l'aggiornamento
+    return await updatedPost.populate('userId', 'displayName email').execPopulate();
+};
 
 export default {
     addPost,
@@ -262,4 +269,7 @@ export default {
 
 
     toggleLike,
+
+    findPostById,
+
 }
