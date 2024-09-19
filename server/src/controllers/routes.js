@@ -1,3 +1,4 @@
+// controllers/routes.js
 import checkAuthorizationMiddleware from "../middleware/checkAuthorizationMiddleware.js";
 import idParamValidator from "../validators/idParamValidator.js";
 import registerController from "./registerController.js";

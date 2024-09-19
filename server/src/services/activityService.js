@@ -113,7 +113,7 @@ const toggleLike = async (id, userId) => {
         throw new Error('Post non trovato');
     }
 
-    console.log('Post trovato:', post.title); // Verifica se il post viene trovato
+    //console.log('Post trovato:', post.title); // Verifica se il post viene trovato
 
     if (post.userId.toString() === userId) {
         throw new Error('Il proprietario del post non può mettere like al proprio post');
@@ -129,7 +129,7 @@ const toggleLike = async (id, userId) => {
         post.likes.splice(likeIndex, 1);
     }
 
-    console.log('Stato del like aggiornato:', post.likes); // Verifica se l'array di likes è stato aggiornato correttamente
+    //console.log('Stato del like aggiornato:', post.likes); // Verifica se l'array di likes è stato aggiornato correttamente
 
     return await post.save(); // Salviamo il post con il nuovo stato dei like
 };

@@ -216,7 +216,7 @@ const unlikePost = async (id, userId) => {
 
 const findPostById = async (id) => {
     try {
-        const post = await activitySchema.findById(id);  // Recuperiamo il post dal database
+        const post = await activitySchema.findById(id).populate('userId', 'displayName email');  // Popola i dettagli dell'utente
         if (!post) throw new Error('Post non trovato nel database');
         return post;
     } catch (err) {
@@ -226,7 +226,7 @@ const findPostById = async (id) => {
 };
 
 const toggleLike = async (id, userId) => {
-    const post = await findPostById(id);
+    const post = await findPostById(id);  // Assicuriamoci di popolare i dettagli dell'utente qui
 
     if (!post) {
         throw new Error('Post non trovato');
@@ -240,35 +240,11 @@ const toggleLike = async (id, userId) => {
         post.likes.splice(likeIndex, 1); // Rimuoviamo il like
     }
 
-    return await post.save(); // Salviamo il post aggiornato con i like
+    const updatedPost = await post.save();  // Salviamo il post aggiornato
+
+    // Popola i dettagli completi dell'utente dopo l'aggiornamento
+    return await updatedPost.populate('userId', 'displayName email').execPopulate();
 };
-
-/* const toggleLike = async (id, userId) => {
-    const post = await activitySchema.findOne({ _id: id });
-
-    if (!post) {
-        throw new Error('Post non trovato');
-    }
-
-    if (post.userId.toString() === userId) {
-        throw new Error('Il proprietario del post non può mettere like al proprio post');
-    }
-
-    const likeIndex = post.likes.indexOf(userId);
-
-    //console.log(likeIndex)
-
-    if (likeIndex === -1) {
-        // L'utente non ha ancora messo like, quindi aggiungiamo il suo ID
-        post.likes.push(userId);
-    } else {
-        // L'utente ha già messo like, quindi rimuoviamo il suo ID
-        post.likes.splice(likeIndex, 1);
-    }
-    //console.log(post.likes)
-
-    return await post.save();
-} */
 
 export default {
     addPost,
