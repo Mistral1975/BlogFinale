@@ -1,3 +1,5 @@
+// src/repository/activityRepository.js
+
 import activitySchema from "../schema/activitySchema.js";
 import commentSchema from "../schema/commentSchema.js";
 import { normalizeTags } from '../utils/utils.js';
@@ -212,7 +214,36 @@ const unlikePost = async (id, userId) => {
     return await post.save(); // salva il documento nel database. Se il documento è nuovo, viene inserito. Se il documento esiste già, viene aggiornato con le modifiche effettuate.
 }
 
+const findPostById = async (id) => {
+    try {
+        const post = await activitySchema.findById(id);  // Recuperiamo il post dal database
+        if (!post) throw new Error('Post non trovato nel database');
+        return post;
+    } catch (err) {
+        console.error('Errore durante il recupero del post:', err.message);
+        throw err;
+    }
+};
+
 const toggleLike = async (id, userId) => {
+    const post = await findPostById(id);
+
+    if (!post) {
+        throw new Error('Post non trovato');
+    }
+
+    const likeIndex = post.likes.indexOf(userId);
+
+    if (likeIndex === -1) {
+        post.likes.push(userId); // Aggiungiamo il like
+    } else {
+        post.likes.splice(likeIndex, 1); // Rimuoviamo il like
+    }
+
+    return await post.save(); // Salviamo il post aggiornato con i like
+};
+
+/* const toggleLike = async (id, userId) => {
     const post = await activitySchema.findOne({ _id: id });
 
     if (!post) {
@@ -237,7 +268,7 @@ const toggleLike = async (id, userId) => {
     //console.log(post.likes)
 
     return await post.save();
-}
+} */
 
 export default {
     addPost,
@@ -262,4 +293,7 @@ export default {
 
 
     toggleLike,
+
+    findPostById,
+
 }

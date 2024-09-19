@@ -7,7 +7,8 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useRouter, useParams } from "next/navigation";
 import PostDate from '../components/PostDate';
-import Image from '../components/Image';
+//import Image from '../components/Image';
+import Avatar from '../components/Avatar';
 import TagsOverviewSinglePost from '../components/TagsOverviewSinglePost';
 import Comments from '../components/Comments';
 import EditPostForm from '../components/EditPostForm';
@@ -111,13 +112,14 @@ const SinglePostLayout = () => {
                 <dd>
                   <ul className="flex flex-wrap justify-center gap-4 sm:space-x-12 xl:block xl:space-x-0 xl:space-y-8">
                     <li className="flex items-center space-x-2" key={singlePost.userId._id}>
-                      <Image
+                      {/* <Image
                         src="/static/images/4043254_avatar_elderly_grandma_nanny_icon.png"
                         width={38}
                         height={38}
                         alt="avatar"
                         className="h-10 w-10 rounded-full"
-                      />
+                      /> */}
+                      <Avatar user={user} />
                       <dl className="whitespace-nowrap text-sm font-medium leading-5">
                         <dt className="sr-only">Name</dt>
                         <dd className="text-gray-900 dark:text-gray-100">{singlePost.userId.displayName}</dd>

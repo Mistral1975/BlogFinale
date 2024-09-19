@@ -1,3 +1,5 @@
+// src/schema/activitySchema.js
+
 import { Schema, model } from "mongoose";
 
 const activitySchema = new Schema({
@@ -7,7 +9,7 @@ const activitySchema = new Schema({
     //userId: { type: Schema.Types.ObjectId, default: null },
     userId: { type: Schema.Types.ObjectId, ref: 'user', required: true },
     categoryId: { type: String },
-    likes: { type: [Schema.Types.ObjectId], default: [] },
+    likes: { type: [Schema.Types.ObjectId], default: [] }, // Array di ID utente che hanno messo like
     //likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], // Array di ID utente
     tags: [{ type: String, default: null }],
 }, {
