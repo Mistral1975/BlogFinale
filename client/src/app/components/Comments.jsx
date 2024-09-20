@@ -86,16 +86,16 @@ const Comments = ({ postId }) => {
         ...newComment,
         userId: {
           _id: user._id, // Assegna subito l'ID utente
-          displayName: user.email // O usa un altro campo appropriato per il nome visualizzato
+          displayName: user.displayName || user.name || user.email // Fallback su altri campi se displayName non è disponibile
         },
         createdAt: new Date().toISOString() // Assegna la data corrente
       };
 
       // Aggiungi subito il commento temporaneo allo stato locale
       const updatedComments = [tempComment, ...comments];
-      setCommentsToShow(updatedComments.slice(0, commentsLoaded));
-      dispatch(setComments({ postId, comments: updatedComments }));
-      dispatch(setCommentsCount({ postId, commentsCount: commentsCount + 1 }));
+      //setCommentsToShow(updatedComments.slice(0, commentsLoaded));
+      //dispatch(setComments({ postId, comments: updatedComments }));
+      //dispatch(setCommentsCount({ postId, commentsCount: commentsCount + 1 }));
 
       try {
         // Crea il payload per la richiesta
@@ -127,6 +127,7 @@ const Comments = ({ postId }) => {
           const sortedComments = updatedCommentsAfterSave.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
           setCommentsToShow(sortedComments.slice(0, commentsLoaded));
           dispatch(setComments({ postId, comments: sortedComments }));
+          dispatch(setCommentsCount({ postId, commentsCount: commentsCount + 1 }));
         } else {
           console.error('Errore nel salvataggio del commento');
         }
@@ -257,16 +258,6 @@ const Comments = ({ postId }) => {
                     <div className="comment">
                       <div className="comment-img">
                         <Link href={`../user/profile/${comment.userId._id}`} className="gsc-comment-author-avatar">
-                          {/* <Image
-                            src="/static/images/4043254_avatar_elderly_grandma_nanny_icon.png"
-                            width={40}
-                            height={40}
-                            alt='userId'
-                            loading="lazy"
-                            className="mr-2 rounded-full"
-                          /> */}
-                          {/* <Avatar user={user} /> */}
-                          {/* Utilizza Avatar per mostrare un avatar unico per ogni utente */}
                           <Avatar user={comment.userId} />
                           {console.log("comment.userId -> ", comment.userId)}
                         </Link>

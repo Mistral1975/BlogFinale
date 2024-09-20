@@ -5,12 +5,12 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 // Funzione asincrona (thunk) per gestire il toggle del like
 export const toggleLike = createAsyncThunk(
     'postblog/toggleLike',
-    async ({ postId, userId, liked }, { rejectWithValue, getState }) => {
+    async ({ postId, userId }, { rejectWithValue, getState }) => {
         const state = getState(); // Ottiene lo stato globale per accedere ai dati dell'utente
         const token = state.user.accessToken; // Ottiene il token di autenticazione dall'utente loggato
         try {
             const response = await fetch(`http://localhost:8000/posts/${postId}/like`, {
-                method: liked ? 'DELETE' : 'POST', // Se l'utente ha già messo like, lo rimuoviamo
+                method: 'POST', // Se l'utente ha già messo like, lo rimuoviamo
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}` // Passiamo il token di autenticazione
@@ -52,10 +52,7 @@ const postsSlice = createSlice({
         setSinglePost: (state, action) => {
             state.singlePost = action.payload.singlePost;
             state.prevPost = action.payload.prevPost;
-            state.prevPost = action.payload.nextPost;
-            //console.log("state.singlePost ----> ", state.singlePost)
-            //console.log("state.prevPost ----> ", state.prevPost)
-            //console.log("state.nextPost ----> ", state.nextPost)
+            state.nextPost = action.payload.nextPost;
         },
         addPost: (state, action) => {
             state.postsList.push(action.payload);

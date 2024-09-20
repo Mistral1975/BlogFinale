@@ -29,12 +29,12 @@ function Like({ postId }) {
     }
 
     // Aggiungi un controllo per verificare se `likedBy` esiste prima di chiamare `.includes()`
-    const liked = post.likedBy ? post.likedBy.includes(user._id) : false; // Se likedBy non esiste, imposta liked su false
+    const liked = post.likes ? post.likes.includes(user._id) : false; // Se likedBy non esiste, imposta liked su false
     const likeCount = post.likes ? post.likes.length : 0; // Se likes non esiste, imposta likeCount su 0
 
     // Gestione del click sul like
     const handleClick = () => {
-        dispatch(toggleLike({ postId, userId: user._id, liked }));
+        dispatch(toggleLike({ postId, userId: user._id }));
     };
 
     return (
