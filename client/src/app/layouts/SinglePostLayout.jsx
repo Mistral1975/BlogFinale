@@ -1,16 +1,21 @@
 // app/layouts/SinglePostLayout.jsx
+
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import Link from 'next/link';
+import { useRouter, useParams } from "next/navigation";
 import { setList, deletePost } from '../store/postsSlice';
+import Link from 'next/link';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { useRouter, useParams } from "next/navigation";
 import PostDate from '../components/PostDate';
 import Avatar from '../components/Avatar';
 import TagsOverviewSinglePost from '../components/TagsOverviewSinglePost';
 import Comments from '../components/Comments';
 import EditPostForm from '../components/EditPostForm';
+import PostActions from '../components/PostActions';
+import PostNavigation from '../components/PostNavigation';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
+
 
 const SinglePostLayout = () => {
   const { id } = useParams();
@@ -42,36 +47,6 @@ const SinglePostLayout = () => {
     });
   }, [id, dispatch, user.accessToken]);
 
-
-  const [openModal, setOpenModal] = useState(false);    
-  const handleOpenModal = () => setOpenModal(true);
-  const openForm = () => setShowForm(true);
-  const closeForm = () => setShowForm(false);
-  const openDeleteConfirm = () => setShowDeleteConfirm(true);
-  const closeDeleteConfirm = () => setShowDeleteConfirm(false);
-
-  const handleDelete = async () => {
-    try {
-      const response = await fetch(`http://localhost:8000/posts/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          "Authorization": `bearer ${user.accessToken}`
-        },
-      });
-
-      if (response.ok) {
-        dispatch(deletePost(id)); // Dispatch dell'azione Redux per eliminare il post
-        closeDeleteConfirm(); // Chiudi la finestra di conferma dopo l'eliminazione del post
-        router.push('/blog'); // Reindirizza alla homepage
-      } else {
-        console.error('Failed to delete post');
-      }
-    } catch (error) {
-      console.error('Error deleting post:', error);
-    }
-  };
-  
   if (loading) {
     return <div>Caricamento...</div>;
   }
@@ -83,7 +58,36 @@ const SinglePostLayout = () => {
   if (!singlePost) {
     return <div>Post non trovato</div>;
   }
+
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/posts/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": `Bearer ${user.accessToken}`
+        },
+      });
+
+      if (response.ok) {
+        dispatch(deletePost(id)); // Dispatch dell'azione Redux per eliminare il post
+        //closeDeleteConfirm(); // Chiudi la finestra di conferma dopo l'eliminazione del post
+        router.push('/blog'); // Reindirizza alla homepage
+      } else {
+        console.error('Failed to delete post');
+      }
+    } catch (error) {
+      console.error('Error deleting post:', error);
+    }
+  };
   
+  //const [openModal, setOpenModal] = useState(false);    
+  //const handleOpenModal = () => setOpenModal(true);
+  const openForm = () => setShowForm(true);
+  const closeForm = () => setShowForm(false);
+  //const openDeleteConfirm = () => setShowDeleteConfirm(true);
+  //const closeDeleteConfirm = () => setShowDeleteConfirm(false);
+
   return (
     <>
       <Header />
@@ -129,13 +133,10 @@ const SinglePostLayout = () => {
                   }
                   {singlePost.description}</div>
                 {user.email && user._id === singlePost.userId._id && !showForm &&
-                  <div className="pb-6 pt-6 text-sm text-gray-700 dark:text-gray-300">
-                    <button onClick={openForm} className="text-blue-500 hover:underline">
-                      Modifica Post
-                    </button>
-                    {` • `}
-                    <button onClick={openDeleteConfirm} className="text-red-500 hover:underline">Elimina Post</button>
-                  </div>
+                  <PostActions
+                  onEdit={() => setShowForm(true)}
+                  onDelete={() => setShowDeleteConfirm(true)}
+                />
                 }
                 {/********* MODIFICA POST ********/}
                 {showForm && (
@@ -155,28 +156,7 @@ const SinglePostLayout = () => {
                     </div>
                   </div>
                   {(nextPost || prevPost) && (
-                    <div className="flex justify-between py-4 xl:block xl:space-y-8 xl:py-8">
-                      {prevPost && (
-                        <div>
-                          <h2 className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                            Previous Article
-                          </h2>
-                          <div className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400">
-                            <Link href={`/posts/${prevPost._id}`}>{prevPost.title}</Link>
-                          </div>
-                        </div>
-                      )}
-                      {nextPost && (
-                        <div>
-                          <h2 className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                            Next Article
-                          </h2>
-                          <div className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400">
-                            <Link href={`/posts/${nextPost._id}`}>{nextPost.title}</Link>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    <PostNavigation prevPost={prevPost} nextPost={nextPost} />
                   )}
                 </div>
                 <div className="pt-4 xl:pt-8">
@@ -199,7 +179,7 @@ const SinglePostLayout = () => {
       {/********************************/}
       {/** FINESTRA DI CONFERMA ELIMINAZIONE **/}
       {/********************************/}
-      {showDeleteConfirm && (
+      {/* {showDeleteConfirm && (
         <div className="fixed inset-0 flex items-center justify-center z-50">
           <div className="bg-white p-8 rounded-lg shadow-lg dark:bg-gray-700">
             <h2 className="text-xl font-semibold mb-4 dark:text-white">Conferma Eliminazione</h2>
@@ -210,6 +190,13 @@ const SinglePostLayout = () => {
             </div>
           </div>
         </div>
+      )} */}
+      {showDeleteConfirm && (
+        <DeleteConfirmModal
+          postTitle={singlePost.title}
+          onDelete={handleDelete}
+          onCancel={() => setShowDeleteConfirm(false)}
+        />
       )}
       {/********************************/}
       {/************* FINE *************/}
