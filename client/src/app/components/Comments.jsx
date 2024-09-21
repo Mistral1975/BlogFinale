@@ -21,7 +21,7 @@ const Comments = ({ postId }) => {
   const [commentsLoaded, setCommentsLoaded] = useState(3);  // Stato per gestire quanti commenti sono caricati inizialmente
   const [commentsToShow, setCommentsToShow] = useState([]); // Stato per gestire i commenti visualizzati progressivamente
 
-
+  // useEffect invia una richiesta al backend per ottenere i commenti associati al post quando il componente viene montato o quando cambia il postId.
   useEffect(() => {
     const fetchComments = async () => {
       try {
