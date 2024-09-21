@@ -1,21 +1,23 @@
 // components/CommentFormModal.jsx
 
 import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setComments, setCommentsCount } from '../store/commentsSlice';
 import "../css/commentform.module.css";
 
-const CommentFormModal = ({ postId, closeModal, onUpdateComments, onDeleteComment, initialComment = null, mode = 'add' }) => {
+const CommentFormModal = ({ postId, closeModal, initialComment = null, mode = 'add' }) => {
+
+    const dispatch = useDispatch();
 
     console.log("initialComment: ", initialComment)
 
     const user = useSelector(state => state.user);
-    const [newComment, setNewComment] = useState({
-        description: '',
-    });
+    const [newComment, setNewComment] = useState({ description: '' });
     const [message, setMessage] = useState(null);
-    const [validationErrors, setValidationErrors] = useState({
-        description: '',
-    });
+    const [validationErrors, setValidationErrors] = useState({ description: '' });
+
+    const comments = useSelector(state => state.comments.comments[postId] || []);
+    const commentsCount = useSelector(state => state.comments.commentsCount[postId] || 0);
 
     useEffect(() => {
         if (initialComment) {
@@ -28,74 +30,75 @@ const CommentFormModal = ({ postId, closeModal, onUpdateComments, onDeleteCommen
         const { name, value } = e.target;
 
         // Gestione facoltativa degli errori di convalida
-        setValidationErrors(
-            prevValue => {
-                return {
-                    ...prevValue,
-                    [name]: ''
-                }
-            }
-        )
+        setValidationErrors(prevValue => ({ ...prevValue, [name]: '' }));
 
         // Aggiornamento dello stato dell'input
-        setNewComment(
-            prevState => {
-                return {
-                    ...prevState,
-                    [name]: value
-                }
-            })
+        setNewComment(prevState => ({ ...prevState, [name]: value }));
     }
 
     const handleSubmit = async () => {
-        let formIsValid = true;
 
         if (newComment.description === '') {
-            setValidationErrors(prevValue => ({
-                ...prevValue,
-                description: 'Il commento non può essere vuoto'
-            }));
-            formIsValid = false;
+            setValidationErrors({ description: 'Il commento non può essere vuoto' });
+            return;
         }
 
-        if (formIsValid) {
+        // Crea un ID temporaneo per il nuovo commento fino a quando non riceviamo una risposta dal server (Inserimento di un nuovo commento gestito come ottimistico)
+        const tempId = `temp-${new Date().getTime()}`;
+        const tempComment = {
+            _id: tempId,
+            ...newComment,
+            userId: {
+                _id: user._id, // Assegna subito l'ID utente
+                displayName: user.displayName || user.name || user.email // O usa un altro campo appropriato per il nome visualizzato
+            },
+            createdAt: new Date().toISOString() // Assegna la data corrente
+        };
 
-            setMessage({ text: mode === 'edit' ? 'Aggiornamento del commento...' : 'Inserimento nuovo commento...', type: 'info' });
+        // Dispatch per aggiornare Redux con il commento temporaneo
+        dispatch(setComments({ postId, comments: [tempComment, ...comments] }));
+        dispatch(setCommentsCount({ postId, commentsCount: commentsCount + 1 }));
 
-            try {
-                const url = mode === 'edit'
-                    ? `http://localhost:8000/posts/${postId}/comments/${initialComment._id}`
-                    : `http://localhost:8000/posts/${postId}/comments`;
+        setMessage({ text: mode === 'edit' ? 'Aggiornamento del commento...' : 'Inserimento nuovo commento...', type: 'info' });
 
-                const method = mode === 'edit' ? 'PATCH' : 'POST';
+        const url = mode === 'edit'
+            ? `http://localhost:8000/posts/${postId}/comments/${initialComment._id}`
+            : `http://localhost:8000/posts/${postId}/comments`;
 
-                // Crea il payload per la richiesta
-                const payload = {
-                    description: newComment.description
-                    // Non includere campi non previsti come userId, _id, createdAt, updatedAt, __v
-                };
+        const method = mode === 'edit' ? 'PATCH' : 'POST';
 
-                const res = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        "Authorization": `Bearer ${user.accessToken}`
-                    },
-                    body: JSON.stringify(payload),
-                });
+        try {
+            const res = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${user.accessToken}`
+                },
+                body: JSON.stringify({ description: newComment.description }),
+            });
 
-                if (res.ok) {
-                    const commentData = await res.json();
-                    onUpdateComments(commentData); // Aggiorna i commenti nel componente padre
-                    setNewComment({ description: '' });
-                    setMessage({ text: mode === 'edit' ? 'Commento aggiornato con successo!' : 'Commento inserito con successo!', type: 'info' });
-                    closeModal();
-                } else {
-                    setMessage({ text: 'Errore nell\'invio del commento', type: 'error' });
-                }
-            } catch (e) {
-                setMessage({ text: "Errore nella richiesta di aggiunta commento:", type: 'error' });
+            if (res.ok) {
+                const savedComment = await res.json();
+                console.log("savedComment VALE ", savedComment)
+
+
+
+                // Aggiorna Redux con il commento salvato
+                dispatch(setComments({
+                    postId,
+                    comments: comments.map(comment => comment._id === tempId ? savedComment : comment)
+                }));
+
+
+
+                setNewComment({ description: '' });
+                setMessage({ text: mode === 'edit' ? 'Commento aggiornato con successo!' : 'Commento inserito con successo!', type: 'info' });
+                closeModal();
+            } else {
+                setMessage({ text: 'Errore nell\'invio del commento', type: 'error' });
             }
+        } catch (e) {
+            setMessage({ text: "Errore nella richiesta di aggiunta commento:", type: 'error' });
         }
     }
 
