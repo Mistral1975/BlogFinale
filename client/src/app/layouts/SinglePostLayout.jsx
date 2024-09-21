@@ -7,7 +7,6 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useRouter, useParams } from "next/navigation";
 import PostDate from '../components/PostDate';
-//import Image from '../components/Image';
 import Avatar from '../components/Avatar';
 import TagsOverviewSinglePost from '../components/TagsOverviewSinglePost';
 import Comments from '../components/Comments';
