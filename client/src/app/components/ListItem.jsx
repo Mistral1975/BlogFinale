@@ -4,7 +4,7 @@ import Link from "next/link";
 import PostDate from "./PostDate";
 
 export const ListItem = ({ item, id }) => {
-    
+
     return (
         <>
             {/* <!-- SINGOLO ARTICOLO --> */}
@@ -26,6 +26,9 @@ export const ListItem = ({ item, id }) => {
                                     <h2 className="text-2xl font-bold leading-8 tracking-tight">
                                         <Link href={`/posts/${item._id}`} className="text-gray-900 dark:text-gray-100">{item.title}</Link>
                                     </h2>
+                                    <div className="text-base font-medium leading-6 text-gray-500 dark:text-gray-400">                                        
+                                            di {item.userId.displayName}
+                                    </div>
                                     <div className="flex flex-wrap">
                                         {item.tags.map(tag => (
                                             <Link key={tag} href={`/tags/${tag}`} className="mr-3 text-sm font-medium uppercase text-primary-500 hover:text-primary-600 dark:hover:text-primary-400">{tag}</Link>
