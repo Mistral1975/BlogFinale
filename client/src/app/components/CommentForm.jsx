@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setComments, setCommentsCount, addComment } from '../store/commentsSlice';
 
-const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add' }) => {
+const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', onUpdateComments }) => {
 
     const dispatch = useDispatch(); // Hook Redux per inviare azioni
     const user = useSelector(state => state.user); // Dati dell'utente loggato
@@ -84,6 +84,11 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add' }
 
                 // Aggiorna nuovamente lo store Redux con il commento salvato
                 dispatch(setComments({ postId, comments: updatedCommentsAfterSave }));
+
+                // Se la callback `onUpdateComments` è passata, invia il commento appena salvato al componente padre (Comments)
+                if (onUpdateComments) {
+                    onUpdateComments(savupdatedCommentsAfterSaveedComment); // Invia il commento salvato al componente padre
+                }
 
                 setMessage({ text: mode === 'edit' ? 'Commento aggiornato con successo!' : 'Commento inserito con successo!', type: 'info' });
                 setNewComment({ description: '' });
