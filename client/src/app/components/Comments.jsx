@@ -4,11 +4,11 @@ import Link from 'next/link';
 import Avatar from './Avatar';
 import PostDate from './PostDate';
 import Like from './Like';
-import CommentFormModal from './CommentFormModal';
+import CommentForm from './CommentForm';
 import "../css/comments.css";
 
 import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { setComments, setCommentsCount } from '../store/commentsSlice';
 
 const Comments = ({ postId }) => {
@@ -21,13 +21,17 @@ const Comments = ({ postId }) => {
   const [commentsLoaded, setCommentsLoaded] = useState(3);  // Stato per gestire quanti commenti sono caricati inizialmente
   const [commentsToShow, setCommentsToShow] = useState([]); // Stato per gestire i commenti visualizzati progressivamente
 
+  const [openModal, setOpenModal] = useState(false); // Modale aperto o chiuso
+  const [modalMode, setModalMode] = useState('add'); // Modalità del modale (add, edit)
+  const [editComment, setEditComment] = useState(null); // Commento da modificare  
+
   // useEffect invia una richiesta al backend per ottenere i commenti associati al post quando il componente viene montato o quando cambia il postId.
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/posts/${postId}/comments`);
-        if (response.ok) {
-          const commentsData = await response.json();
+        const res = await fetch(`http://localhost:8000/posts/${postId}/comments`);
+        if (res.ok) {
+          const commentsData = await res.json();
           // Ordina i commenti per data decrescente
           const sortedComments = commentsData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
           dispatch(setComments({ postId, comments: sortedComments }));
@@ -43,6 +47,13 @@ const Comments = ({ postId }) => {
 
     fetchComments();
   }, [postId, dispatch]);
+
+  // Funzione per aprire il modale con la modalità specifica
+  const handleOpenModal = (comment = null, mode = 'add') => {
+    setEditComment(comment); // Imposta il commento da modificare (se presente)
+    setModalMode(mode); // Imposta la modalità del modale (aggiungi o modifica)
+    setOpenModal(true); // Apri il modale
+  };
 
   // Mostra o nasconde i commenti cambiando il valore booleano di showComments da true a false e viceversa.
   const toggleComments = () => {
@@ -62,6 +73,7 @@ const Comments = ({ postId }) => {
         <Like postId={postId} />
         {user.email && ( // Mostra il bottone solo se l'utente è loggato
           <button
+            //onClick={() => setOpenModal(true)}
             onClick={() => handleOpenModal()}
             className="text-blue-500 hover:underline"
             style={{ userSelect: 'none' }}
@@ -69,9 +81,24 @@ const Comments = ({ postId }) => {
             Aggiungi commento
           </button>
         )}
-        <CommentFormModal />
+        {/* {openModal &&
+          <CommentForm
+            postId={postId}
+            closeModal={setOpenModal}
+          />} */}
+        {/* Modale per aggiungere/modificare commenti */}
+        {openModal && (
+          <CommentForm
+            postId={postId}
+            closeModal={() => setOpenModal(false)}
+            initialComment={editComment}
+            mode={modalMode}
+          />
+        )}
+        {/* <CommentForm /> */}
         <button
-          onClick={toggleComments}
+          //onClick={toggleComments}
+          onClick={() => setShowComments(!showComments)}
           className="text-blue-500 hover:underline"
           style={{ userSelect: 'none' }}
         >
@@ -119,7 +146,9 @@ const Comments = ({ postId }) => {
                 ))}
               </ul>
             )}
-            {commentsLoaded < commentsCount && (
+            {/* Caricamento progressivo dei commenti */}
+            {/* {commentsLoaded < commentsCount && ( */}
+            {commentsCount > comments.length && (
               <div className="text-center mt-4">
                 <button onClick={loadMoreComments} className="text-blue-500 hover:underline">
                   Carica altri commenti

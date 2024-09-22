@@ -107,7 +107,7 @@ const PostForm = ({ closeModal }) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        "authorization": `bearer ${user.accessToken}`
+                        "Authorization": `Bearer ${user.accessToken}`
                     },
                     body: JSON.stringify(newPost),
                 });
