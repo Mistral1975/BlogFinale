@@ -10,15 +10,15 @@ const commentsSlice = createSlice({
     initialState,
     reducers: {
         addComment: (state, action) => {
-            console.log("state in addComment: ", state)
-            console.log("action in addComment: ", action)
+            console.log("** state in addComment: ", state)
+            console.log("** action in addComment: ", action)
             
             const { postId, listComments } = action.payload;
 
-            console.log("action.payload in addComment: ", action.payload)
-            console.log("postId in addComment: ", postId)
-            console.log("comment in addComment: ", listComments)
-            console.log("state.listComments[postId] ", state.listComments[postId])
+            console.log("** action.payload in addComment: ", action.payload)
+            console.log("** postId in addComment: ", postId)
+            console.log("** comment in addComment: ", listComments)
+            console.log("** state.listComments[postId] ", state.listComments[postId])
 
             if (!state.listComments[postId]) {
                 state.listComments[postId] = [];
@@ -50,7 +50,10 @@ const commentsSlice = createSlice({
 
         editComment: (state, action) => {
             console.log("state in editComment: ", state)
+            console.log("action in editComment: ", action)
             const { postId, commentId, updatedComment } = action.payload;
+            console.log("action.payload in editComment: ", action.payload)
+            
 
             if (state.listComments[postId]) {
                 const commentIndex = state.listComments[postId].findIndex(
@@ -64,6 +67,10 @@ const commentsSlice = createSlice({
                     };
                 }
             }
+
+            console.log("postId in editComment: ", postId)
+            console.log("updatedComment in editComment: ", updatedComment)
+            console.log("state.listComments[postId] ", state.listComments[postId])
         },
 
         setListComments: (state, action) => {            

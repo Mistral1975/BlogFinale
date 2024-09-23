@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setListComments, setCommentsCount, addComment } from '../store/commentsSlice';
+import { setListComments, setCommentsCount, addComment, editComment, deleteComment } from '../store/commentsSlice';
 
 const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', onUpdateComments }) => {
 
@@ -23,6 +23,7 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
     console.log("listComments: ", listComments)
     console.log("commentsCount: ", commentsCount)
     console.log("initialComment: ", initialComment)
+    console.log("mode ", mode)
 
     useEffect(() => {
         // Se siamo in modalità "edit", inizializza il campo description con il commento esistente
@@ -68,8 +69,11 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
             if (res.ok) {
                 const savedComment = await res.json();
 
-                // Aggiorna lo store Redux con il commento salvato
-                dispatch(addComment({ postId, comment: savedComment }));
+                if (mode === 'add') {
+                    dispatch(addComment({ postId, listComments: savedComment }));
+                } else if (mode === 'edit') {
+                    dispatch(editComment({ postId, listComments: savedComment }));
+                }
 
                 //setMessage({ text: 'Commento inserito con successo!', type: 'info' });
                 setMessage({ text: mode === 'edit' ? 'Commento aggiornato con successo!' : 'Commento inserito con successo!', type: 'info' });

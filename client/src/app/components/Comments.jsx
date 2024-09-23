@@ -25,8 +25,8 @@ const Comments = ({ postId }) => {
   const [modalMode, setModalMode] = useState('add'); // Modalità del modale (add, edit)
   const [editComment, setEditComment] = useState(null); // Commento da modificare  
 
-  console.log("commentsToShow: ", commentsToShow)
-  console.log("listComments: ", listComments, "commentsCount: ", commentsCount)
+  //console.log("commentsToShow: ", commentsToShow)
+  //console.log("listComments: ", listComments, "commentsCount: ", commentsCount)
 
   // useEffect invia una richiesta al backend per ottenere i commenti associati al post quando il componente viene montato o quando cambia il postId.
   useEffect(() => {
@@ -56,7 +56,7 @@ const Comments = ({ postId }) => {
 
   // Funzione per aggiornare i commenti immediatamente dopo l'aggiunta/modifica
   const handleUpdateComments = (newComment) => {
-    dispatch(setListComments({ postId, comments: [newComment, ...listComments] }));
+    dispatch(setListComments({ postId, listComments: [newComment, ...listComments] }));
     dispatch(setCommentsCount({ postId, commentsCount: commentsCount + 1 }));
   };
 
@@ -130,7 +130,7 @@ const Comments = ({ postId }) => {
                               <button onClick={() => handleOpenModal(comment, 'edit')} className="text-blue-500 cursor-text">Modifica</button>
                             </div>
                             <div className="comment-report mr-2">
-                              <button className="text-red-500 cursor-text">Elimina</button>
+                              <button onClick={() => handleOpenModal(comment, 'delete')} className="text-red-500 cursor-text">Elimina</button>
                             </div>
                           </div>
                         )}
