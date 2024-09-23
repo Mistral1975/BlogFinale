@@ -89,7 +89,7 @@ const Comments = ({ postId }) => {
           </button>
         )}
         {/* Modale per aggiungere/modificare commenti */}
-        {openModal && (<CommentForm postId={postId} closeModal={() => setOpenModal(false)} initialComment={editComment} onUpdateComments={handleUpdateComments} mode={modalMode} />
+        {openModal && (<CommentForm postId={postId} closeModal={() => setOpenModal(false)} initialComment={editComment} mode={modalMode} onUpdateComments={handleUpdateComments} />
         )}
         {/* <CommentForm /> */}
         <button
@@ -127,7 +127,7 @@ const Comments = ({ postId }) => {
                         {comment.userId._id === user._id && (
                           <div className="flex justify-end">
                             <div className="comment-reply mr-8">
-                              <button className="text-blue-500 cursor-text">Modifica</button>
+                              <button onClick={() => handleOpenModal(comment, 'edit')} className="text-blue-500 cursor-text">Modifica</button>
                             </div>
                             <div className="comment-report mr-2">
                               <button className="text-red-500 cursor-text">Elimina</button>

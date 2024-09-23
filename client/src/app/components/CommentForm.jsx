@@ -43,11 +43,20 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
             return;
         }
 
-        setMessage({ text: 'Inserimento nuovo commento...', type: 'info' });
+        //setMessage({ text: 'Inserimento nuovo commento...', type: 'info' });
+        setMessage({ text: mode === 'edit' ? 'Aggiornamento del commento...' : 'Inserimento nuovo commento...', type: 'info' });
+
+        const url = mode === 'edit'
+            ? `http://localhost:8000/posts/${postId}/comments/${initialComment._id}`
+            : `http://localhost:8000/posts/${postId}/comments`;
+
+        const method = mode === 'edit' ? 'PATCH' : 'POST';
 
         try {
-            const res = await fetch(`http://localhost:8000/posts/${postId}/comments`, {
-                method: 'POST',
+            /* const res = await fetch(`http://localhost:8000/posts/${postId}/comments`, {
+                method: 'POST', */
+            const res = await fetch(url, {
+                method: method,
                 headers: {
                     'Content-Type': 'application/json',
                     "Authorization": `Bearer ${user.accessToken}`
@@ -61,7 +70,8 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
                 // Aggiorna lo store Redux con il commento salvato
                 dispatch(addComment({ postId, comment: savedComment }));
 
-                setMessage({ text: 'Commento inserito con successo!', type: 'info' });
+                //setMessage({ text: 'Commento inserito con successo!', type: 'info' });
+                setMessage({ text: mode === 'edit' ? 'Commento aggiornato con successo!' : 'Commento inserito con successo!', type: 'info' });
                 setNewComment({ description: '' });
                 closeModal(); // Chiudi il modale dopo l'aggiunta del commento
             } else {
