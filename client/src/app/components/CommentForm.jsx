@@ -22,17 +22,18 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
 
     console.log("listComments: ", listComments)
     console.log("commentsCount: ", commentsCount)
+    console.log("initialComment: ", initialComment)
+
+    useEffect(() => {
+        // Se siamo in modalità "edit", inizializza il campo description con il commento esistente
+        if (mode === 'edit' && initialComment) {
+            setNewComment({ description: initialComment.description });
+        }
+    }, [mode, initialComment]);
 
     const handleChange = (e) => {
-        const { name, value, required, rows, placeholder } = e.target;
-        console.log("e: ", e)
-        console.log("e.target: ", e.target)
-        console.log("name: ", name)
-        console.log("value: ", value)
-        console.log("required: ", required)
-        console.log("rows: ", rows)
-        console.log("placeholder: ", placeholder)
-        //setValidationErrors(prev => ({ ...prev, [name]: '' }));
+        const { name, value } = e.target;
+        setValidationErrors(prev => ({ ...prev, [name]: '' }));
         setNewComment(prev => ({ ...prev, [name]: value }));
     };
 
