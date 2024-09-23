@@ -8,7 +8,7 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
 
     const dispatch = useDispatch(); // Hook Redux per inviare azioni
     const user = useSelector(state => state.user); // Dati dell'utente loggato
-    const comments = useSelector(state => state.comments.comments[postId] || []); // Commenti esistenti
+    const listComments = useSelector(state => state.comments.listComments[postId] || []); // Commenti esistenti
     const commentsCount = useSelector(state => state.comments.commentsCount[postId] || 0); // Numero dei commenti
 
     const [description, setDescription] = useState('');
@@ -20,7 +20,7 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
     const [validationErrors, setValidationErrors] = useState({ description: '' });
 
 
-    console.log("comments: ", comments)
+    console.log("listComments: ", listComments)
     console.log("commentsCount: ", commentsCount)
 
     const handleChange = (e) => {
@@ -42,23 +42,6 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
             setValidationErrors({ description: 'Il commento non può essere vuoto' });
             return;
         }
-
-        // Imposta un commento temporaneo con un ID fittizio fino a quando non otteniamo risposta dal server
-        /* const tempId = `temp-${new Date().getTime()}`;
-        const tempComment = {
-            _id: tempId,
-            ...newComment,
-            userId: {
-                _id: user._id,
-                displayName: user.displayName || user.name || user.email // Usa il nome o email se non esiste displayName
-            },
-            createdAt: new Date().toISOString()
-        }; */
-
-        // Aggiorna lo store Redux e visualizza immediatamente il commento
-        //const updatedComments = [tempComment, ...comments];
-        //dispatch(setListComments({ postId, comments: updatedComments }));
-        //dispatch(setCommentsCount({ postId, commentsCount: commentsCount + 1 }));
 
         setMessage({ text: 'Inserimento nuovo commento...', type: 'info' });
 

@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    comments: {}, // Oggetto per memorizzare i commenti per postId
+    listComments: {}, // Oggetto per memorizzare i commenti per postId
     commentsCount: {}, // Oggetto per memorizzare il conteggio dei commenti per postId
 };
 
@@ -13,16 +13,17 @@ const commentsSlice = createSlice({
             console.log("state in addComment: ", state)
             console.log("action in addComment: ", action)
             
-            const { postId, comment } = action.payload;
+            const { postId, listComments } = action.payload;
 
             console.log("action.payload in addComment: ", action.payload)
             console.log("postId in addComment: ", postId)
-            console.log("comment in addComment: ", comment)
+            console.log("comment in addComment: ", listComments)
+            console.log("state.listComments[postId] ", state.listComments[postId])
 
-            if (!state.comments[postId]) {
-                state.comments[postId] = [];
+            if (!state.listComments[postId]) {
+                state.listComments[postId] = [];
             }
-            state.comments[postId].push(comment);
+            state.listComments[postId].push(listComments);
 
             // Aggiorna il conteggio dei commenti
             if (!state.commentsCount[postId]) {
@@ -35,8 +36,8 @@ const commentsSlice = createSlice({
             console.log("state in deleteComment: ", state)
             const { postId, commentId } = action.payload;
 
-            if (state.comments[postId]) {
-                state.comments[postId] = state.comments[postId].filter(
+            if (state.listComments[postId]) {
+                state.listComments[postId] = state.listComments[postId].filter(
                     comment => comment.id !== commentId
                 );
 
@@ -51,14 +52,14 @@ const commentsSlice = createSlice({
             console.log("state in editComment: ", state)
             const { postId, commentId, updatedComment } = action.payload;
 
-            if (state.comments[postId]) {
-                const commentIndex = state.comments[postId].findIndex(
+            if (state.listComments[postId]) {
+                const commentIndex = state.listComments[postId].findIndex(
                     comment => comment.id === commentId
                 );
 
                 if (commentIndex !== -1) {
-                    state.comments[postId][commentIndex] = {
-                        ...state.comments[postId][commentIndex],
+                    state.listComments[postId][commentIndex] = {
+                        ...state.listComments[postId][commentIndex],
                         ...updatedComment
                     };
                 }
@@ -66,17 +67,16 @@ const commentsSlice = createSlice({
         },
 
         setListComments: (state, action) => {            
-            const { postId, comments } = action.payload;
-            state.comments[postId] = comments;
-            state.commentsCount[postId] = comments.length;
-            console.log("state in setListComments: ", state)
-            console.log("action in setListComments: ", action)
-            console.log("action.payload in setListComments: ", action.payload)
-            console.log("state.comments in setListComments: ", comments)
-            console.log("state.commentsCount in setListComments: ", comments.length)
-        }
+            const { postId, listComments } = action.payload;
+            state.listComments[postId] = listComments;
+        },
+
+        setCommentsCount: (state, action) => {            
+            const { postId, commentsCount } = action.payload;
+            state.commentsCount[postId] = commentsCount;
+        },
     },
 });
 
-export const { addComment, deleteComment, editComment, setListComments } = commentsSlice.actions;
+export const { addComment, deleteComment, editComment, setListComments, setCommentsCount } = commentsSlice.actions;
 export default commentsSlice.reducer;

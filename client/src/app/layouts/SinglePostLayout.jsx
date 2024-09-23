@@ -17,8 +17,6 @@ const SinglePostLayout = () => {
   const postsList = useSelector(state => state.postblog.postsList);
   const singlePost = postsList.find(post => post._id === id);
 
-  console.log("singlePost: ", singlePost)
-
   useEffect(() => {
     fetch(`http://localhost:8000/list`, {
       method: 'GET',
