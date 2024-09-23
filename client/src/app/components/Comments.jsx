@@ -9,7 +9,7 @@ import "../css/comments.css";
 
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from "react-redux";
-import { setComments, setCommentsCount } from '../store/commentsSlice';
+import { setListComments, setCommentsCount, addComment } from '../store/commentsSlice';
 
 const Comments = ({ postId }) => {
 
@@ -34,7 +34,7 @@ const Comments = ({ postId }) => {
           const commentsData = await res.json();
           // Ordina i commenti per data decrescente
           const sortedComments = commentsData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-          dispatch(setComments({ postId, comments: sortedComments }));
+          dispatch(setListComments({ postId, comments: sortedComments }));
           dispatch(setCommentsCount({ postId, commentsCount: sortedComments.length }));
           setCommentsToShow(sortedComments.slice(0, 3));
         } else {
@@ -50,7 +50,7 @@ const Comments = ({ postId }) => {
 
   // Funzione per aggiornare i commenti immediatamente dopo l'aggiunta/modifica
   const handleUpdateComments = (newComment) => {
-    dispatch(setComments({ postId, comments: [newComment, ...comments] }));
+    dispatch(setListComments({ postId, comments: [newComment, ...comments] }));
     dispatch(setCommentsCount({ postId, commentsCount: commentsCount + 1 }));
   };
 
@@ -78,33 +78,15 @@ const Comments = ({ postId }) => {
       <div className="pb-6 pt-6 flex justify-between text-gray-700 dark:text-gray-300" id="comment">
         <Like postId={postId} />
         {user.email && ( // Mostra il bottone solo se l'utente è loggato
-          <button
-            //onClick={() => setOpenModal(true)}
-            onClick={() => handleOpenModal()}
-            className="text-blue-500 hover:underline"
-            style={{ userSelect: 'none' }}
-          >
+          <button onClick={() => handleOpenModal()} className="text-blue-500 hover:underline" style={{ userSelect: 'none' }}>
             Aggiungi commento
           </button>
         )}
-        {/* {openModal &&
-          <CommentForm
-            postId={postId}
-            closeModal={setOpenModal}
-          />} */}
         {/* Modale per aggiungere/modificare commenti */}
-        {openModal && (
-          <CommentForm
-            postId={postId}
-            closeModal={() => setOpenModal(false)}
-            initialComment={editComment}
-            onUpdateComments={handleUpdateComments}
-            mode={modalMode}
-          />
+        {openModal && (<CommentForm postId={postId} closeModal={() => setOpenModal(false)} initialComment={editComment} onUpdateComments={handleUpdateComments} mode={modalMode} />
         )}
         {/* <CommentForm /> */}
         <button
-          //onClick={toggleComments}
           onClick={() => setShowComments(!showComments)}
           className="text-blue-500 hover:underline"
           style={{ userSelect: 'none' }}
