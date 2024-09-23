@@ -52,7 +52,7 @@ const Comments = ({ postId }) => {
     }
 
     fetchComments();
-  }, [postId, dispatch, commentsCount]);
+  }, [postId, dispatch, commentsCount, listComments]);
 
   // Funzione per aggiornare i commenti immediatamente dopo l'aggiunta/modifica
   const handleUpdateComments = (newComment) => {

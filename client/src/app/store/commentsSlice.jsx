@@ -51,7 +51,7 @@ const commentsSlice = createSlice({
         editComment: (state, action) => {
             console.log("state in editComment: ", state)
             console.log("action in editComment: ", action)
-            const { postId, commentId, updatedComment } = action.payload;
+            const { postId, commentId, listComments } = action.payload;
             console.log("action.payload in editComment: ", action.payload)
             
 
@@ -63,13 +63,13 @@ const commentsSlice = createSlice({
                 if (commentIndex !== -1) {
                     state.listComments[postId][commentIndex] = {
                         ...state.listComments[postId][commentIndex],
-                        ...updatedComment
+                        ...listComments
                     };
                 }
             }
 
             console.log("postId in editComment: ", postId)
-            console.log("updatedComment in editComment: ", updatedComment)
+            console.log("updatedComment in editComment: ", listComments)
             console.log("state.listComments[postId] ", state.listComments[postId])
         },
 
