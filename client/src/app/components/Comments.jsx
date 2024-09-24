@@ -52,7 +52,8 @@ const Comments = ({ postId }) => {
     }
 
     fetchComments();
-  }, [postId, dispatch, commentsCount, listComments]);
+    /* }, [postId, dispatch, commentsCount, listComments]); */
+  }, [postId, dispatch, commentsCount]);
 
   // Funzione per aggiornare i commenti immediatamente dopo l'aggiunta/modifica
   const handleUpdateComments = (newComment) => {
@@ -101,55 +102,55 @@ const Comments = ({ postId }) => {
         </button>
       </div>
       {/* {showComments && ( */}
-        <section className="comment-module">
-          <>
-            {commentsCount === 0 ? (
-              <p>Nessun commento disponibile.</p>
-            ) : (
-              <ul>
-                {commentsToShow.map((comment) => (
-                  <li key={comment._id}>
-                    <div className="comment">
-                      <div className="comment-img">
-                        <Link href={`../user/profile/${comment.userId._id}`} className="gsc-comment-author-avatar">
-                          <Avatar user={comment.userId} />
-                        </Link>
-                      </div>
-                      <div className="comment-content">
-                        <div className="comment-details">
-                          <h4 className="comment-name">{comment.userId.displayName}</h4>
-                          <span className="comment-log"><PostDate date={comment.createdAt} format="shortNumeric" /></span>
-                        </div>
-                        <div className="flex w-544 comment-desc">
-                          <p>{comment.description}</p>
-                        </div>
-                        {/* Mostra i pulsanti solo se l'utente è l'autore del commento */}
-                        {comment.userId._id === user._id && (
-                          <div className="flex justify-end">
-                            <div className="comment-reply mr-8">
-                              <button onClick={() => handleOpenModal(comment, 'edit')} className="text-blue-500 cursor-text">Modifica</button>
-                            </div>
-                            <div className="comment-report mr-2">
-                              <button onClick={() => handleOpenModal(comment, 'delete')} className="text-red-500 cursor-text">Elimina</button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
+      <section className="comment-module">
+        <>
+          {commentsCount === 0 ? (
+            <p>Nessun commento disponibile.</p>
+          ) : (
+            <ul>
+              {commentsToShow.map((comment) => (
+                <li key={comment._id}>
+                  <div className="comment">
+                    <div className="comment-img">
+                      <Link href={`../user/profile/${comment.userId._id}`} className="gsc-comment-author-avatar">
+                        <Avatar user={comment.userId} />
+                      </Link>
                     </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-            {/* Caricamento progressivo dei commenti */}
-            {commentsLoaded < commentsCount && (
-              <div className="text-center mt-4">
-                <button onClick={loadMoreComments} className="text-blue-500 hover:underline">
-                  Carica altri commenti
-                </button>
-              </div>
-            )}
-          </>
-        </section>
+                    <div className="comment-content">
+                      <div className="comment-details">
+                        <h4 className="comment-name">{comment.userId.displayName}</h4>
+                        <span className="comment-log"><PostDate date={comment.createdAt} format="shortNumeric" /></span>
+                      </div>
+                      <div className="flex w-544 comment-desc">
+                        <p>{comment.description}</p>
+                      </div>
+                      {/* Mostra i pulsanti solo se l'utente è l'autore del commento */}
+                      {comment.userId._id === user._id && (
+                        <div className="flex justify-end">
+                          <div className="comment-reply mr-8">
+                            <button onClick={() => handleOpenModal(comment, 'edit')} className="text-blue-500 cursor-text">Modifica</button>
+                          </div>
+                          <div className="comment-report mr-2">
+                            <button onClick={() => handleOpenModal(comment, 'delete')} className="text-red-500 cursor-text">Elimina</button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+          {/* Caricamento progressivo dei commenti */}
+          {commentsLoaded < commentsCount && (
+            <div className="text-center mt-4">
+              <button onClick={loadMoreComments} className="text-blue-500 hover:underline">
+                Carica altri commenti
+              </button>
+            </div>
+          )}
+        </>
+      </section>
       {/* )} */}
     </>
   );
