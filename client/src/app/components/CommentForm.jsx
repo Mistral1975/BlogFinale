@@ -8,17 +8,10 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
 
     const dispatch = useDispatch(); // Hook Redux per inviare azioni
     const user = useSelector(state => state.user); // Dati dell'utente loggato
-    //const listComments = useSelector(state => state.comments.listComments[postId] || []); // Commenti esistenti
-    //const commentsCount = useSelector(state => state.comments.commentsCount[postId] || 0); // Numero dei commenti
     const [loading, setLoading] = useState(false);
     const [newComment, setNewComment] = useState({ description: '' });
     const [message, setMessage] = useState(null);
     const [validationErrors, setValidationErrors] = useState({ description: '' });
-
-    /* console.log("listComments: ", listComments)
-    console.log("commentsCount: ", commentsCount)
-    console.log("initialComment: ", initialComment)
-    console.log("mode ", mode) */
 
     useEffect(() => {
         // Se siamo in modalità "edit", inizializza il campo description con il commento esistente

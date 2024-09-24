@@ -52,8 +52,6 @@ const Comments = ({ postId }) => {
     }
 
     fetchComments();
-    /* }, [postId, dispatch, commentsCount, listComments]); */
-    /* }, [postId, dispatch, commentsCount]); */
   }, [postId, dispatch, forceReload]);
 
   // Funzione per aprire il modale con la modalità specifica
@@ -62,11 +60,6 @@ const Comments = ({ postId }) => {
     setModalMode(mode); // Imposta la modalità del modale (aggiungi o modifica)
     setOpenModal(true); // Apri il modale
   };
-
-  // Mostra o nasconde i commenti cambiando il valore booleano di showComments da true a false e viceversa.
-  const toggleComments = () => {
-    setShowComments(!showComments);
-  }
 
   // Carica altri 10 commenti a partire dall'attuale stato di caricamento
   const loadMoreComments = () => {

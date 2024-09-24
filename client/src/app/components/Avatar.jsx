@@ -58,7 +58,6 @@ const Avatar = ({ user = {} }) => { // Predefinisco un oggetto vuoto per preveni
     const initials = getInitials(name, email); // Calcola le iniziali
     const avatarKey = name || email || 'NN'; // Usiamo name o email come base per il colore e assicura che avatarKey non sia mai null o undefined
     const backgroundColor = stringToColor(avatarKey); // Colore basato su name o email
-    //const textColor = backgroundColor > '#888888' ? 'black' : 'white'; // Se il colore è chiaro, usa testo nero
     const textColor = getTextColor(backgroundColor); // Usa getTextColor per determinare il colore del testo
 
     return (
@@ -66,7 +65,6 @@ const Avatar = ({ user = {} }) => { // Predefinisco un oggetto vuoto per preveni
             className="avatar-circle"
             style={{
                 backgroundColor: backgroundColor,
-                //color: textColor,
                 color: textColor, // Usa il testo calcolato dalla luminosità
                 display: 'flex',
                 alignItems: 'center',
