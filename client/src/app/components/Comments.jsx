@@ -20,13 +20,13 @@ const Comments = ({ postId }) => {
   const [showComments, setShowComments] = useState(false); // Stato per gestire la visibilità dei commenti
   const [commentsLoaded, setCommentsLoaded] = useState(3);  // Stato per gestire quanti commenti sono caricati inizialmente
   const [commentsToShow, setCommentsToShow] = useState([]); // Stato per gestire i commenti visualizzati progressivamente
-
   const [openModal, setOpenModal] = useState(false); // Modale aperto o chiuso
   const [modalMode, setModalMode] = useState('add'); // Modalità del modale (add, edit)
-  const [editComment, setEditComment] = useState(null); // Commento da modificare  
+  const [editComment, setEditComment] = useState(null); // Commento da modificare
 
-  //console.log("commentsToShow: ", commentsToShow)
-  //console.log("listComments: ", listComments, "commentsCount: ", commentsCount)
+  // Recupera il valore di forceReload dallo stato Redux per monitorare le modifiche ai commenti.
+  // Ogni volta che forceReload cambia, useEffect viene riattivato per aggiornare i commenti.
+  const forceReload = useSelector((state) => state.comments.forceReload);
 
   // useEffect invia una richiesta al backend per ottenere i commenti associati al post quando il componente viene montato o quando cambia il postId.
   useEffect(() => {
@@ -53,7 +53,8 @@ const Comments = ({ postId }) => {
 
     fetchComments();
     /* }, [postId, dispatch, commentsCount, listComments]); */
-  }, [postId, dispatch, commentsCount]);
+    /* }, [postId, dispatch, commentsCount]); */
+  }, [postId, dispatch, forceReload]);
 
   // Funzione per aggiornare i commenti immediatamente dopo l'aggiunta/modifica
   const handleUpdateComments = (newComment) => {
@@ -90,7 +91,7 @@ const Comments = ({ postId }) => {
           </button>
         )}
         {/* Modale per aggiungere/modificare commenti */}
-        {openModal && (<CommentForm postId={postId} closeModal={() => setOpenModal(false)} initialComment={editComment} mode={modalMode} onUpdateComments={handleUpdateComments} />
+        {openModal && (<CommentForm postId={postId} closeModal={() => setOpenModal(false)} initialComment={editComment} mode={modalMode} />
         )}
         {/* <CommentForm /> */}
         <button
@@ -101,6 +102,7 @@ const Comments = ({ postId }) => {
           Commenti ({commentsCount})
         </button>
       </div>
+
       {/* {showComments && ( */}
       <section className="comment-module">
         <>
@@ -151,7 +153,6 @@ const Comments = ({ postId }) => {
           )}
         </>
       </section>
-      {/* )} */}
     </>
   );
 }

@@ -1,12 +1,17 @@
 // app/layouts/SinglePostLayout.jsx
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { setList } from '../store/postsSlice';
 import Header from '../components/Header';
+import Footer from '../components/Footer';
 import PostDate from '../components/PostDate';
+import Avatar from '../components/Avatar';
+import TagsOverviewSinglePost from '../components/TagsOverviewSinglePost';
 import Comments from '../components/Comments';
+import Link from 'next/link';
+import EditPostForm from '../components/EditPostForm';
 
 const SinglePostLayout = () => {
   const { id } = useParams();
@@ -16,6 +21,24 @@ const SinglePostLayout = () => {
   const error = useSelector((state) => state.postblog.error);
   const postsList = useSelector(state => state.postblog.postsList);
   const singlePost = postsList.find(post => post._id === id);
+
+
+  const router = useRouter(); // Usa il router di Next.js
+  const currentIndex = postsList.findIndex(post => post._id === id);
+  const prevPost = currentIndex > 0 ? postsList[currentIndex - 1] : null;
+  const nextPost = currentIndex < postsList.length - 1 ? postsList[currentIndex + 1] : null;
+  const [showForm, setShowForm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+
+  const [openModal, setOpenModal] = useState(false);    
+  const handleOpenModal = () => setOpenModal(true);
+  const openForm = () => setShowForm(true);
+  const closeForm = () => setShowForm(false);
+  const openDeleteConfirm = () => setShowDeleteConfirm(true);
+  const closeDeleteConfirm = () => setShowDeleteConfirm(false);
+
+
 
   useEffect(() => {
     fetch(`http://localhost:8000/list`, {
@@ -47,22 +70,6 @@ const SinglePostLayout = () => {
   return (
     <>
       <Header />
-
-
-      <div>ID del post:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {singlePost._id}</div>
-      <div>TITLE del post:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {singlePost.title}</div>
-      <div>DESCRIPTION del post:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {singlePost.description}</div>
-      <div>IMAGEURL del post:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {singlePost.imageUrl}</div>
-      <div>USERID._ID del post:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {singlePost.userId._id}</div>
-      <div>USERID.DISPLAYNAME del post:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {singlePost.userId.displayName}</div>
-      <div>USERID.EMAIL del post:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {singlePost.userId.email}</div>
-      <div>LIKES del post:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {singlePost.likes}</div>
-      <div>TAGS del post:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {singlePost.tags}</div>
-      <div>CREATEDAT del post:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {singlePost.createdAt}</div>
-      <div>UPDATEDAT del post:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {singlePost.updatedAt}</div>
-      <div>__V del post:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {singlePost.__v}</div>
-
-
       <main>
         <article>
           <div className="xl:divide-y xl:divide-gray-200 xl:dark:divide-gray-700">
@@ -81,6 +88,20 @@ const SinglePostLayout = () => {
               </div>
             </header>
             <div className="grid-rows-[auto_1fr] divide-y divide-gray-200 pb-8 dark:divide-gray-700 xl:grid xl:grid-cols-4 xl:gap-x-6 xl:divide-y-0">
+              <dl className="pb-10 pt-6 xl:border-b xl:border-gray-200 xl:pt-11 xl:dark:border-gray-700">
+                <dt className="sr-only">Authors</dt>
+                <dd>
+                  <ul className="flex flex-wrap justify-center gap-4 sm:space-x-12 xl:block xl:space-x-0 xl:space-y-8">
+                    <li className="flex items-center space-x-2" key={singlePost.userId._id}>
+                      <Avatar user={singlePost.userId} />
+                      <dl className="whitespace-nowrap text-sm font-medium leading-5">
+                        <dt className="sr-only">Name</dt>
+                        <dd className="text-gray-900 dark:text-gray-100">{singlePost.userId.displayName}</dd>
+                      </dl>
+                    </li>
+                  </ul>
+                </dd>
+              </dl>
               <div className="divide-y divide-gray-200 dark:divide-gray-700 xl:col-span-3 xl:row-span-2 xl:pb-0">
                 <div className="prose max-w-none pb-8 pt-10 dark:prose-invert">
                   {singlePost.imageUrl &&
@@ -90,16 +111,72 @@ const SinglePostLayout = () => {
                     <div></div>
                   }
                   {singlePost.description}</div>
+                {user.email && user._id === singlePost.userId._id && !showForm &&
+                  <div className="pb-6 pt-6 text-sm text-gray-700 dark:text-gray-300">
+                    <button onClick={openForm} className="text-blue-500 hover:underline">
+                      Modifica Post
+                    </button>
+                    {` • `}
+                    <button onClick={openDeleteConfirm} className="text-red-500 hover:underline">Elimina Post</button>
+                  </div>
+                }
+                {/********* MODIFICA POST ********/}
+                {showForm && (
+                  <EditPostForm singlePost={singlePost} user={user} closeForm={closeForm} />
+                )}
                 {/******* COMMENTI DEL POST ******/}
                 <Comments postId={singlePost._id} />
               </div>
               <footer>
-
+                <div className="divide-gray-200 text-sm font-medium leading-5 dark:divide-gray-700 xl:col-start-1 xl:row-start-2 xl:divide-y">
+                  <div className="py-4 xl:py-8">
+                    <h2 className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                      Tags
+                    </h2>
+                    <div className="flex flex-wrap">
+                      <TagsOverviewSinglePost postId={singlePost._id} />
+                    </div>
+                  </div>
+                  {(nextPost || prevPost) && (
+                    <div className="flex justify-between py-4 xl:block xl:space-y-8 xl:py-8">
+                      {prevPost && (
+                        <div>
+                          <h2 className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                            Previous Article
+                          </h2>
+                          <div className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400">
+                            <Link href={`/posts/${prevPost._id}`}>{prevPost.title}</Link>
+                          </div>
+                        </div>
+                      )}
+                      {nextPost && (
+                        <div>
+                          <h2 className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                            Next Article
+                          </h2>
+                          <div className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400">
+                            <Link href={`/posts/${nextPost._id}`}>{nextPost.title}</Link>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <div className="pt-4 xl:pt-8">
+                  <Link
+                    href={`/blog`}
+                    className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
+                    aria-label="Back to the blog"
+                  >
+                    &larr; Back to the blog
+                  </Link>
+                </div>
               </footer>
             </div>
           </div>
         </article>
       </main >
+      <Footer />
     </>
   )
 }

@@ -2,28 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setListComments, setCommentsCount, addComment, editComment, deleteComment } from '../store/commentsSlice';
+import { addComment, editComment, deleteComment } from '../store/commentsSlice';
 
 const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', onUpdateComments }) => {
 
     const dispatch = useDispatch(); // Hook Redux per inviare azioni
     const user = useSelector(state => state.user); // Dati dell'utente loggato
-    const listComments = useSelector(state => state.comments.listComments[postId] || []); // Commenti esistenti
-    const commentsCount = useSelector(state => state.comments.commentsCount[postId] || 0); // Numero dei commenti
-
-    const [description, setDescription] = useState('');
+    //const listComments = useSelector(state => state.comments.listComments[postId] || []); // Commenti esistenti
+    //const commentsCount = useSelector(state => state.comments.commentsCount[postId] || 0); // Numero dei commenti
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-
     const [newComment, setNewComment] = useState({ description: '' });
     const [message, setMessage] = useState(null);
     const [validationErrors, setValidationErrors] = useState({ description: '' });
 
-
-    console.log("listComments: ", listComments)
+    /* console.log("listComments: ", listComments)
     console.log("commentsCount: ", commentsCount)
     console.log("initialComment: ", initialComment)
-    console.log("mode ", mode)
+    console.log("mode ", mode) */
 
     useEffect(() => {
         // Se siamo in modalità "edit", inizializza il campo description con il commento esistente
@@ -46,7 +41,6 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
                 return;
             }
         }
-        //setMessage({ text: 'Inserimento nuovo commento...', type: 'info' });
         setMessage({ text: mode === 'edit' ? 'Aggiornamento del commento...' : mode === 'delete' ? 'Eliminazione del commento...' : 'Inserimento nuovo commento...', type: 'info' });
 
         const url = mode === 'edit'
@@ -58,8 +52,6 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
         const method = mode === 'edit' ? 'PATCH' : mode === 'delete' ? 'DELETE' : 'POST';
 
         try {
-            /* const res = await fetch(`http://localhost:8000/posts/${postId}/comments`, {
-                method: 'POST', */
             const res = await fetch(url, {
                 method: method,
                 headers: {
@@ -68,23 +60,6 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
                 },
                 body: JSON.stringify({ description: newComment.description })
             });
-
-            /* if (res.ok) {
-                const savedComment = await res.json();
-
-                if (mode === 'add') {
-                    dispatch(addComment({ postId, listComments: savedComment }));
-                } else if (mode === 'edit') {
-                    dispatch(editComment({ postId, listComments: savedComment }));
-                }
-
-                //setMessage({ text: 'Commento inserito con successo!', type: 'info' });
-                setMessage({ text: mode === 'edit' ? 'Commento aggiornato con successo!' : 'Commento inserito con successo!', type: 'info' });
-                setNewComment({ description: '' });
-                closeModal(); // Chiudi il modale dopo l'aggiunta del commento
-            } else {
-                setMessage({ text: 'Errore nell\'invio del commento', type: 'error' });
-            } */
 
             if (res.ok) {
                 if (mode === 'delete') {
@@ -102,8 +77,7 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
             
                     setMessage({ text: mode === 'edit' ? 'Commento aggiornato con successo!' : 'Commento inserito con successo!', type: 'info' });
                     setNewComment({ description: '' });
-                }
-            
+                }            
                 closeModal(); // Chiude il modale dopo aver completato l'operazione
             } else {
                 setMessage({ text: `Errore nell'operazione: ${mode}`, type: 'error' });
@@ -124,7 +98,6 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
                     <div className="underline"></div>
                 </div>
                 <div className="inputs">
-
                     {mode === 'delete' ? (
                         <>
                             <p>Sei sicuro di voler eliminare questo commento?</p>
@@ -151,7 +124,6 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
 
                 <div className="submit-container">
                     <div className="submit gray" onClick={() => closeModal()}>Annulla</div>
-                    {/* <div className="submit" onClick={handleSubmit}>Invia</div> */}
                     <div className="submit" onClick={handleSubmit} disabled={loading}>
                         {loading ? "Invio in corso..." : "Invia"}
                     </div>

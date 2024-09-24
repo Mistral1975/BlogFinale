@@ -9,16 +9,8 @@ const commentsSlice = createSlice({
     name: "comments",
     initialState,
     reducers: {
-        addComment: (state, action) => {
-            console.log("** state in addComment: ", state)
-            console.log("** action in addComment: ", action)
-            
+        addComment: (state, action) => {          
             const { postId, listComments } = action.payload;
-
-            console.log("** action.payload in addComment: ", action.payload)
-            console.log("** postId in addComment: ", postId)
-            console.log("** comment in addComment: ", listComments)
-            console.log("** state.listComments[postId] ", state.listComments[postId])
 
             if (!state.listComments[postId]) {
                 state.listComments[postId] = [];
@@ -30,10 +22,10 @@ const commentsSlice = createSlice({
                 state.commentsCount[postId] = 0;
             }
             state.commentsCount[postId] += 1;
+            state.forceReload = !state.forceReload; // Inverte il valore di forceReload per forzare l'esecuzione di useEffect dopo l'aggiunta di un commento
         },
 
         deleteComment: (state, action) => {
-            console.log("state in deleteComment: ", state)
             const { postId, commentId } = action.payload;
 
             if (state.listComments[postId]) {
@@ -44,16 +36,13 @@ const commentsSlice = createSlice({
                 // Aggiorna il conteggio dei commenti
                 if (state.commentsCount[postId]) {
                     state.commentsCount[postId] -= 1;
+                    state.forceReload = !state.forceReload; // Inverte il valore di forceReload per forzare l'esecuzione di useEffect dopo l'eliminazione di un commento
                 }
             }
         },
 
         editComment: (state, action) => {
-            console.log("state in editComment: ", state)
-            console.log("action in editComment: ", action)
-            const { postId, commentId, listComments } = action.payload;
-            console.log("action.payload in editComment: ", action.payload)
-            
+            const { postId, commentId, listComments } = action.payload;          
 
             if (state.listComments[postId]) {
                 const commentIndex = state.listComments[postId].findIndex(
@@ -65,12 +54,9 @@ const commentsSlice = createSlice({
                         ...state.listComments[postId][commentIndex],
                         ...listComments
                     };
+                    state.forceReload = !state.forceReload; // Inverte il valore di forceReload per forzare l'esecuzione di useEffect dopo la modifica di un commento
                 }
             }
-
-            console.log("postId in editComment: ", postId)
-            console.log("updatedComment in editComment: ", listComments)
-            console.log("state.listComments[postId] ", state.listComments[postId])
         },
 
         setListComments: (state, action) => {            

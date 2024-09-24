@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter, useParams } from "next/navigation";
-import { setList, deletePost } from '../store/postsSlice';
+import { setList } from '../store/postsSlice';
 import Link from 'next/link';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -37,7 +37,7 @@ const SinglePostLayout = () => {
       method: 'GET',
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `bearer ${user.accessToken}`
+        "Authorization": `Bearer ${user.accessToken}`
       },
     }).then(async res => {
       const jsonRes = await res.json();
@@ -58,35 +58,6 @@ const SinglePostLayout = () => {
   if (!singlePost) {
     return <div>Post non trovato</div>;
   }
-
-  const handleDelete = async () => {
-    try {
-      const response = await fetch(`http://localhost:8000/posts/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          "Authorization": `Bearer ${user.accessToken}`
-        },
-      });
-
-      if (response.ok) {
-        dispatch(deletePost(id)); // Dispatch dell'azione Redux per eliminare il post
-        //closeDeleteConfirm(); // Chiudi la finestra di conferma dopo l'eliminazione del post
-        router.push('/blog'); // Reindirizza alla homepage
-      } else {
-        console.error('Failed to delete post');
-      }
-    } catch (error) {
-      console.error('Error deleting post:', error);
-    }
-  };
-  
-  //const [openModal, setOpenModal] = useState(false);    
-  //const handleOpenModal = () => setOpenModal(true);
-  const openForm = () => setShowForm(true);
-  const closeForm = () => setShowForm(false);
-  //const openDeleteConfirm = () => setShowDeleteConfirm(true);
-  //const closeDeleteConfirm = () => setShowDeleteConfirm(false);
 
   return (
     <>
