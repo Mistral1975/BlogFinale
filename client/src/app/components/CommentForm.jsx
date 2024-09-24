@@ -39,21 +39,23 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
     };
 
     const handleSubmit = async () => {
+
         if (mode != 'delete') {
             if (newComment.description === '') {
                 setValidationErrors({ description: 'Il commento non può essere vuoto' });
                 return;
             }
         }
-
         //setMessage({ text: 'Inserimento nuovo commento...', type: 'info' });
-        setMessage({ text: mode === 'edit' ? 'Aggiornamento del commento...' : 'Inserimento nuovo commento...', type: 'info' });
+        setMessage({ text: mode === 'edit' ? 'Aggiornamento del commento...' : mode === 'delete' ? 'Eliminazione del commento...' : 'Inserimento nuovo commento...', type: 'info' });
 
         const url = mode === 'edit'
             ? `http://localhost:8000/posts/${postId}/comments/${initialComment._id}`
+            : mode === 'delete' 
+            ? `http://localhost:8000/posts/${postId}/comments/${initialComment._id}` 
             : `http://localhost:8000/posts/${postId}/comments`;
 
-        const method = mode === 'edit' ? 'PATCH' : 'POST';
+        const method = mode === 'edit' ? 'PATCH' : mode === 'delete' ? 'DELETE' : 'POST';
 
         try {
             /* const res = await fetch(`http://localhost:8000/posts/${postId}/comments`, {
@@ -67,7 +69,7 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
                 body: JSON.stringify({ description: newComment.description })
             });
 
-            if (res.ok) {
+            /* if (res.ok) {
                 const savedComment = await res.json();
 
                 if (mode === 'add') {
@@ -82,9 +84,32 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
                 closeModal(); // Chiudi il modale dopo l'aggiunta del commento
             } else {
                 setMessage({ text: 'Errore nell\'invio del commento', type: 'error' });
+            } */
+
+            if (res.ok) {
+                if (mode === 'delete') {
+                    // Dispatch dell'azione per rimuovere il commento
+                    dispatch(deleteComment({ postId, commentId: initialComment._id }));
+                    setMessage({ text: 'Commento eliminato con successo!', type: 'info' });
+                } else {
+                    const savedComment = await res.json();
+            
+                    if (mode === 'add') {
+                        dispatch(addComment({ postId, listComments: savedComment }));
+                    } else if (mode === 'edit') {
+                        dispatch(editComment({ postId, listComments: savedComment }));
+                    }
+            
+                    setMessage({ text: mode === 'edit' ? 'Commento aggiornato con successo!' : 'Commento inserito con successo!', type: 'info' });
+                    setNewComment({ description: '' });
+                }
+            
+                closeModal(); // Chiude il modale dopo aver completato l'operazione
+            } else {
+                setMessage({ text: `Errore nell'operazione: ${mode}`, type: 'error' });
             }
         } catch (e) {
-            setMessage({ text: "Errore nella richiesta di aggiunta commento:", type: 'error' });
+            setMessage({ text: `Errore durante l'operazione: ${mode}`, type: 'error' });
         }
     }
 
