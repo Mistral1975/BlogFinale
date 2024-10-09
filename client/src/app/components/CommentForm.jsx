@@ -22,8 +22,8 @@ const CommentForm = ({ postId, closeModal, initialComment = null, mode = 'add', 
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setValidationErrors(prev => ({ ...prev, [name]: '' }));
-        setNewComment(prev => ({ ...prev, [name]: value }));
+        setValidationErrors(prevValue => ({...prevValue, [name]: '' }));
+        setNewComment(prevState => ({ ...prevState, [name]: value }));
     };
 
     const handleSubmit = async () => {

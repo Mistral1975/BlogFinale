@@ -1,24 +1,20 @@
 //"use client";
 
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addPost } from "../store/postsSlice";
-//import "../css/postform.module.css";
 
-const PostForm = ({ closeModal }) => {
-    const user = useSelector(state => state.user);
+const PostForm = ({ closeModal, initialPost = null, mode = 'add' }) => {
+    const dispatch = useDispatch(); // Hook Redux per inviare azioni
+    const user = useSelector(state => state.user); // Dati dell'utente loggato
     const [action, setAction] = useState("Aggiungi un Post");
-
     const [newPost, setNewPost] = useState({
         title: '',
         description: '',
         imageUrl: '',
         tags: '',
     });
-
     const [message, setMessage] = useState(null);
-    const [isValid, setIsValid] = useState(null);
-
     const [validationErrors, setValidationErrors] = useState({
         title: '',
         description: '',
@@ -26,32 +22,117 @@ const PostForm = ({ closeModal }) => {
         tags: ''
     });
 
+    // Precompila il form se si sta modificando un post
+    useEffect(() => {
+        if (initialPost) {
+            setNewPost({
+                title: initialPost.title,
+                description: initialPost.description,
+                imageUrl: initialPost.imageUrl,
+                tags: initialPost.tags
+            });
+        }
+    }, [initialPost]);
+
+    /* useEffect(() => {
+        // Se siamo in modalità "edit", inizializza il campo description con il commento esistente
+        if (mode === 'edit' && initialComment) {
+            setNewComment({ description: initialComment.description });
+        }
+    }, [mode, initialComment]); */
+
     const handleChange = (e) => {
-        const { name, value } = e.target; // utilizza l'assegnazione per destructuring per estrarre due proprietà dall'oggetto e.target: name (l'attributo name del campo di input) e value (il valore corrente inserito dall'utente).
-        console.log(`Sto scrivendo ${value} su ${name}`)
+        const { name, value } = e.target;
+        setValidationErrors(prevValue => ({...prevValue, [name]: '' }));
+        setNewPost(prevState => ({ ...prevState, [name]: value }));
+    };
 
-        // Gestione facoltativa degli errori di convalida
-        setValidationErrors(  // blocco responsabile dell'aggiornamento dello stato degli errori di convalida, riceve lo stato precedente (prevValue) e restituisce un nuovo oggetto di stato.
-            newPost => {
-                return {  // Questa blocco crea un nuovo oggetto basato sullo stato precedente "validationErrors"
-                    ...newPost, // Utilizza l'operatore spread (...) per copiare le proprietà esistenti
-                    [name]: ''  // imposta dinamicamente il valore per la proprietà corrispondente al nome del campo di input (name) su una stringa vuota ('').
-                }             // Questo cancella effettivamente qualsiasi messaggio di errore di convalida esistente per il campo di input specifico con cui l'utente sta interagendo
-            }
-        )
 
-        // Aggiornamento dello stato dell'input
-        setNewPost(newPost => { // blocco responsabile dell'aggiornamento dello stato dell'input 
-            return {        // Utilizza l'operatore spread (...) per copiare le proprietà esistenti e quindi utilizza la notazione a parentesi quadre ([name])
-                ...newPost, // per impostare dinamicamente il valore per la proprietà corrispondente al nome del campo di input (name) al nuovo valore inserito dall'utente (value).
-                [name]: value // Questo aggiorna effettivamente lo stato con l'ultimo valore immesso nel campo di input
-            }
-        })
-    }
 
-    const dispatch = useDispatch();
 
     const handleSubmit = async () => {
+        let formIsValid = true;
+
+        // Validazione
+        if (newPost.title === '') {
+            setValidationErrors(prevValue => ({
+                ...prevValue,
+                title: 'Il titolo non può essere vuoto'
+            }));
+            formIsValid = false;
+        }
+        if (newPost.description === '') {
+            setValidationErrors(prevValue => ({
+                ...prevValue,
+                description: 'La descrizione non può essere vuota'
+            }));
+            formIsValid = false;
+        }
+        if (newPost.imageUrl === '') {
+            setValidationErrors(prevValue => ({
+                ...prevValue,
+                imageUrl: 'L\'URL dell\'immagine non può essere vuoto'
+            }));
+            formIsValid = false;
+        }
+        if (newPost.tags === '') {
+            setValidationErrors(prevValue => ({
+                ...prevValue,
+                tags: 'I tag non possono essere vuoti'
+            }));
+            formIsValid = false;
+        }
+
+        if (!formIsValid) return;
+
+        setMessage({ text: mode === 'edit' ? 'Aggiornamento del post...' : 'Inserimento nuovo post...', type: 'info' });
+        //setMessage({ text: mode === 'edit' ? 'Aggiornamento del commento...' : mode === 'delete' ? 'Eliminazione del commento...' : 'Inserimento nuovo commento...', type: 'info' });
+
+        const url = mode === 'edit'
+            ? `http://localhost:8000/posts/${initialPost._id}` // Utilizza il postId se si modifica
+            : 'http://localhost:8000/posts'; // Nuovo post
+
+        const method = mode === 'edit' ? 'PATCH' : 'POST'; // Cambia metodo in base alla modalità
+
+        try {
+            const res = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${user.accessToken}`
+                },
+                body: JSON.stringify(newPost),
+            });            
+
+            if (res.ok) {
+                const savedPost = await res.json();
+
+                console.log("SAVEDPOST ", savedPost)
+                
+                if (mode === 'edit') {
+                    dispatch(updatePost(savedPost)); // Aggiorna il post nello store Redux
+                } else {
+                    dispatch(addPost(savedPost)); // Aggiungi il nuovo post allo store Redux
+                }
+
+                setMessage({ text: mode === 'edit' ? 'Post aggiornato con successo!' : 'Post aggiunto con successo!', type: 'info' });
+                closeModal(false);
+            } else {
+                setMessage({ text: 'Errore durante l\'invio del post.', type: 'error' });
+                //setMessage({ text: `Errore nell'operazione: ${mode}`, type: 'error' });
+            }
+        } catch (error) {
+            setMessage({ text: 'Errore nella richiesta.', type: 'error' });
+            //setMessage({ text: `Errore durante l'operazione: ${mode}`, type: 'error' });
+        }
+    };
+
+
+
+
+
+
+    /* const handleSubmit = async () => {
 
         let formIsValid = true;
 
@@ -133,10 +214,10 @@ const PostForm = ({ closeModal }) => {
         } else {
             setMessage(null);
         }
-    };
+    }; */
 
-    console.log("newPost : ", newPost)
-    console.log("validationErrors : ", validationErrors)
+    //console.log("newPost : ", newPost)
+    //console.log("validationErrors : ", validationErrors)
 
     return (
         <div className="modalBackground">
@@ -146,6 +227,7 @@ const PostForm = ({ closeModal }) => {
                 </div>
                 <div className="headerLogin">
                     <div className="text">{action}</div>
+                    {/* <div className="text">{mode === 'edit' ? 'Modifica Commento' : mode === 'delete' ? 'Conferma Eliminazione' : 'Aggiungi un Commento'}</div> */}
                     <div className="underline"></div>
                 </div>
                 <div className="inputs">
