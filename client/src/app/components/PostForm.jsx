@@ -7,7 +7,7 @@ import { addPost } from "../store/postsSlice";
 
 const PostForm = ({ closeModal }) => {
     const user = useSelector(state => state.user);
-    const [action, setAction] = useState("Add New Post");
+    const [action, setAction] = useState("Aggiungi un Post");
 
     const [newPost, setNewPost] = useState({
         title: '',
@@ -59,7 +59,7 @@ const PostForm = ({ closeModal }) => {
             setValidationErrors(prevValue => {
                 return {
                     ...prevValue,
-                    title: 'title cannot be empty'
+                    title: 'Il titolo non può essere vuoto'
                 }
             })
             formIsValid = false;
@@ -69,7 +69,7 @@ const PostForm = ({ closeModal }) => {
             setValidationErrors(prevValue => {
                 return {
                     ...prevValue,
-                    description: 'description cannot be empty'
+                    description: 'La descrizione non può essere vuota'
                 }
             })
             formIsValid = false;
@@ -79,7 +79,7 @@ const PostForm = ({ closeModal }) => {
             setValidationErrors(prevValue => {
                 return {
                     ...prevValue,
-                    imageUrl: 'imageUrl cannot be empty'
+                    imageUrl: 'L\'URL dell\'immagine non può essere vuoto'
                 }
             })
             formIsValid = false;
@@ -89,7 +89,7 @@ const PostForm = ({ closeModal }) => {
             setValidationErrors(prevValue => {
                 return {
                     ...prevValue,
-                    tags: 'tags cannot be empty'
+                    tags: 'I tag non possono essere vuoti'
                 }
             })
             formIsValid = false;
@@ -172,17 +172,17 @@ const PostForm = ({ closeModal }) => {
                 }
 
                 <div className="submit-container">
-                    <div className={action === "Add New Post" ? "submit gray" : "submit"}
+                    <div className={action === "Aggiungi un Post" ? "submit gray" : "submit"}
                         onClick={() => {
                             closeModal(false)
                         }}
                     >Annulla</div>
                     <div className={action === "Annulla" ? "submit gray" : "submit"}
                         onClick={() => {
-                            setAction("Add New Post")
+                            setAction("Aggiungi un Post")
                             handleSubmit()
                         }}
-                    >Add New Post</div>
+                    >Invia</div>
                 </div>
             </div>
         </div>

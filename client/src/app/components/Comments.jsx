@@ -80,7 +80,6 @@ const Comments = ({ postId }) => {
         {/* Modale per aggiungere/modificare commenti */}
         {openModal && (<CommentForm postId={postId} closeModal={() => setOpenModal(false)} initialComment={editComment} mode={modalMode} />
         )}
-        {/* <CommentForm /> */}
         <button
           onClick={() => setShowComments(!showComments)}
           className="text-blue-500 hover:underline"

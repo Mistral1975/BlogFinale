@@ -5,9 +5,17 @@ import PostForm from './PostForm';
 
 const TagsTitle = () => {
     const user = useSelector(state => state.user);
-    const posts = useSelector(state => state.postblog.postsList);    
-    const [openModal, setOpenModal] = useState(false);    
-    const handleOpenModal = () => setOpenModal(true);
+    const posts = useSelector(state => state.postblog.postsList);
+    const [editPost, setEditPost] = useState(null); // Post da modificare
+    const [openModal, setOpenModal] = useState(false); // Modale aperto o chiuso
+    const [modalMode, setModalMode] = useState('add'); // Modalità del modale (add, edit)
+
+    // Funzione per aprire il modale con la modalità specifica
+    const handleOpenModal = (post = null, mode = 'add') => {
+        setEditPost(post); // Imposta il post da modificare (se presente)
+        setModalMode(mode); // Imposta la modalità del modale (aggiungi o modifica)
+        setOpenModal(true); // Apri il modale
+    };
 
     return (
         <>
@@ -18,13 +26,20 @@ const TagsTitle = () => {
             {user.email && (
                 <>
                     <div className="flex justify-end">
-                        <button className="bg-blue-500 text-white py-2 px-4 rounded" onClick={handleOpenModal}>
+                        <button onClick={() => handleOpenModal(null, 'add')} className="bg-blue-500 text-white py-2 px-4 rounded" /* onClick={handleOpenModal} */>
                             Aggiungi nuovo post
                         </button>
                     </div>
-                    {openModal && <PostForm closeModal={setOpenModal} />}          
                 </>
-            )}            
+            )}
+            {/* Modale per aggiungere/modificare post */}
+            {openModal && (
+                <PostForm
+                    closeModal={() => setOpenModal(false)}
+                    initialPost={editPost} // Passa il post da modificare (se esiste)
+                    mode={modalMode} // Passa la modalità
+                />
+            )}
         </>
     )
 }
