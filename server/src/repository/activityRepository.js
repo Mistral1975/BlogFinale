@@ -5,7 +5,19 @@ import commentSchema from "../schema/commentSchema.js";
 import { normalizeTags } from '../utils/utils.js';
 
 const addPost = async (content) => {
-    return await new activitySchema(content).save();
+    //return await new activitySchema(content).save();
+
+
+
+    const post = new activitySchema(content);
+
+    const savedPost = await post.save(); // Salva il post
+
+    // Popoliamo il campo userId con displayName e email
+    const populatedPost = await savedPost.populate('userId', 'displayName email');
+
+    // Ritorna il post popolato con le informazioni dell'utente
+    return populatedPost;
 }
 
 const updatePost = async (id, content) => {
