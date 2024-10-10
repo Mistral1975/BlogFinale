@@ -4,6 +4,8 @@ import { useDispatch } from 'react-redux';
 import { updatePost } from '../store/postsSlice';
 
 const EditPostForm = ({ singlePost, user, closeForm }) => {
+
+  console.log("SINGLEPOST ", singlePost)
   const dispatch = useDispatch();
 
   const [newPost, setNewPost] = useState({

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addPost } from "../store/postsSlice";
+import { addPost, updatePost, deletePost } from "../store/postsSlice";
 
 const PostForm = ({ closeModal, initialPost = null, mode = 'add' }) => {
     const dispatch = useDispatch(); // Hook Redux per inviare azioni
@@ -24,7 +24,9 @@ const PostForm = ({ closeModal, initialPost = null, mode = 'add' }) => {
 
     // Precompila il form se si sta modificando un post
     useEffect(() => {
-        if (initialPost) {
+        // Se siamo in modalità "edit", inizializza i campo del form con il post esistente
+        if (mode === 'edit' && initialPost) {
+            console.log("INITIALPOST ", initialPost)
             setNewPost({
                 title: initialPost.title,
                 description: initialPost.description,
@@ -32,25 +34,152 @@ const PostForm = ({ closeModal, initialPost = null, mode = 'add' }) => {
                 tags: initialPost.tags
             });
         }
-    }, [initialPost]);
-
-    /* useEffect(() => {
-        // Se siamo in modalità "edit", inizializza il campo description con il commento esistente
-        if (mode === 'edit' && initialComment) {
-            setNewComment({ description: initialComment.description });
-        }
-    }, [mode, initialComment]); */
+    }, [mode, initialPost]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setValidationErrors(prevValue => ({...prevValue, [name]: '' }));
+        setValidationErrors(prevValue => ({ ...prevValue, [name]: '' }));
         setNewPost(prevState => ({ ...prevState, [name]: value }));
+    };
+
+    const handleSubmit = async () => {
+        let formIsValid = true;
+
+        if (mode !== 'delete') { // La validazione si applica solo se non siamo in modalità delete
+            let formIsValid = true;
+
+            if (newPost.title === '') {
+                setValidationErrors(prevValue => ({
+                    ...prevValue,
+                    title: 'Il titolo non può essere vuoto'
+                }));
+                //return;
+                formIsValid = false;
+            }
+            if (newPost.description === '') {
+                setValidationErrors(prevValue => ({
+                    ...prevValue,
+                    description: 'La descrizione non può essere vuota'
+                }));
+                //return;
+                formIsValid = false;
+            }
+            if (newPost.imageUrl === '') {
+                setValidationErrors(prevValue => ({
+                    ...prevValue,
+                    imageUrl: 'L\'URL dell\'immagine non può essere vuoto'
+                }));
+                //return;
+                formIsValid = false;
+            }
+            if (newPost.tags === '') {
+                setValidationErrors(prevValue => ({
+                    ...prevValue,
+                    tags: 'I tag non possono essere vuoti'
+                }));
+                //return;
+                formIsValid = false;
+            }
+
+            if (!formIsValid) {
+                return;
+            }
+        }
+
+
+
+        setMessage({ text: mode === 'edit' ? 'Aggiornamento del post...' : mode === 'delete' ? 'Eliminazione del post...' : 'Inserimento nuovo post...', type: 'info' });
+
+        const url = mode === 'edit'
+            ? `http://localhost:8000/posts/${initialPost._id}` // Utilizza il postId se si modifica
+            : mode === 'delete'
+                ? `http://localhost:8000/posts/${initialPost._id}`
+                : 'http://localhost:8000/posts'; // Nuovo post
+
+        const method = mode === 'edit' ? 'PATCH' : mode === 'delete' ? 'DELETE' : 'POST'; // Cambia metodo in base alla modalità
+
+        try {
+
+            // Costruisce il payload in base alla modalità
+            const payload = {
+                title: newPost.title,
+                description: newPost.description,
+                imageUrl: newPost.imageUrl,
+                tags: newPost.tags,
+            };
+
+            // Aggiunge solo i campi `userId` e `updatedAt` in modalità `edit`
+            if (mode === 'edit') {
+                payload.userId = user._id;   // Include userId solo se stai modificando
+                payload.updatedAt = Date.now(); // Aggiorna la data solo in `edit`
+            }
+
+            const res = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${user.accessToken}`
+                },
+                body: JSON.stringify(payload), // Usa il payload condizionale
+            });
+
+            // Aggiungi solo i campi `userId` e `updatedAt` in modalità `edit`
+            if (mode === 'edit') {
+                payload.userId = user._id;   // Include userId solo se stai modificando
+                payload.updatedAt = Date.now(); // Aggiorna la data solo in `edit`
+            }
+
+            //const responseBody = await res.json();
+            //console.log('Server response:', responseBody); // Aggiungi questo log
+
+
+            // Controllo del codice di stato HTTP
+            if (!res.ok) {
+                console.error(`Errore dal server: ${res.status} - ${res.statusText}`);
+                const errorResponse = await res.text(); // Leggi la risposta testuale dell'errore
+                console.error('Dettaglio errore:', errorResponse);
+                setMessage({ text: `Errore durante l'invio del post: ${res.status} - ${res.statusText}`, type: 'error' });
+                return;
+            }
+
+
+
+            if (res.ok) {                
+                if (mode === 'delete') {
+                    // Dispatch dell'azione per rimuovere il post
+                    dispatch(deletePost({ postId: initialPost._id }));
+                    setMessage({ text: 'Post eliminato con successo!', type: 'info' });
+                } else {
+                    const savedPost = await res.json();
+
+                    if (mode === 'edit') {
+                        dispatch(updatePost(savedPost)); // Aggiorna il post nello store Redux
+                    } else {
+                        dispatch(addPost(savedPost)); // Aggiungi il nuovo post allo store Redux
+                    }
+
+                    setMessage({ text: mode === 'edit' ? 'Post aggiornato con successo!' : 'Post aggiunto con successo!', type: 'info' });
+                    setNewPost({
+                        title: '',
+                        description: '',
+                        imageUrl: '',
+                        tags: ''
+                    });
+                }
+                closeModal(); // Chiude il modale dopo aver completato l'operazione
+            } else {
+                setMessage({ text: 'Errore durante l\'invio del post.', type: 'error' });
+                //setMessage({ text: `Errore nell'operazione: ${mode}`, type: 'error' });
+            }
+        } catch (error) {
+            setMessage({ text: 'Errore nella richiesta.', type: 'error' });
+        }
     };
 
 
 
 
-    const handleSubmit = async () => {
+    /* const handleSubmit = async () => {
         let formIsValid = true;
 
         // Validazione
@@ -125,99 +254,9 @@ const PostForm = ({ closeModal, initialPost = null, mode = 'add' }) => {
             setMessage({ text: 'Errore nella richiesta.', type: 'error' });
             //setMessage({ text: `Errore durante l'operazione: ${mode}`, type: 'error' });
         }
-    };
-
-
-
-
-
-
-    /* const handleSubmit = async () => {
-
-        let formIsValid = true;
-
-        if (newPost.title === '') {
-            setValidationErrors(prevValue => {
-                return {
-                    ...prevValue,
-                    title: 'Il titolo non può essere vuoto'
-                }
-            })
-            formIsValid = false;
-        }
-
-        if (newPost.description === '') {
-            setValidationErrors(prevValue => {
-                return {
-                    ...prevValue,
-                    description: 'La descrizione non può essere vuota'
-                }
-            })
-            formIsValid = false;
-        }
-
-        if (newPost.imageUrl === '') {
-            setValidationErrors(prevValue => {
-                return {
-                    ...prevValue,
-                    imageUrl: 'L\'URL dell\'immagine non può essere vuoto'
-                }
-            })
-            formIsValid = false;
-        }
-
-        if (newPost.tags === '') {
-            setValidationErrors(prevValue => {
-                return {
-                    ...prevValue,
-                    tags: 'I tag non possono essere vuoti'
-                }
-            })
-            formIsValid = false;
-        }
-
-        setIsValid(formIsValid);
-
-
-        if (formIsValid) {
-            console.log(`Sto inviando i dati ${newPost.title}, ${newPost.description}, ${newPost.imageUrl}, ${newPost.tags}`);
-            setMessage({ text: 'Inserimento nuovo post...', type: 'info' });
-
-            try {
-                const res = await fetch('http://localhost:8000/posts', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        "Authorization": `Bearer ${user.accessToken}`
-                    },
-                    body: JSON.stringify(newPost),
-                });
-
-                if (res.ok) {
-                    dispatch(addPost(await res.json()));
-
-                    setNewPost({
-                        title: '',
-                        description: '',
-                        imageUrl: '',
-                        tags: '',
-                    });
-                    setMessage({ text: 'Post added successfully!', type: 'info' });
-                    closeModal(false);
-                } else {
-                    setMessage({ text: 'Failed to add post.', type: 'error' });
-                }
-            } catch (e) {
-                setMessage({ text: "Errore! Impossibile aggiungere il post", type: 'error' });
-                console.error('Error adding post:', error);
-            }
-        } else {
-            setMessage(null);
-        }
     }; */
 
-    //console.log("newPost : ", newPost)
-    //console.log("validationErrors : ", validationErrors)
+
 
     return (
         <div className="modalBackground">
@@ -226,27 +265,66 @@ const PostForm = ({ closeModal, initialPost = null, mode = 'add' }) => {
                     <button onClick={() => closeModal(false)}> X </button>
                 </div>
                 <div className="headerLogin">
-                    <div className="text">{action}</div>
-                    {/* <div className="text">{mode === 'edit' ? 'Modifica Commento' : mode === 'delete' ? 'Conferma Eliminazione' : 'Aggiungi un Commento'}</div> */}
+                    <div className="text">{mode === 'edit' ? 'Modifica Commento' : mode === 'delete' ? 'Conferma Eliminazione' : 'Aggiungi un Commento'}</div>
                     <div className="underline"></div>
                 </div>
                 <div className="inputs">
-                    <div className="input">
-                        <input type="text" id="title" name="title" placeholder="Titolo" onChange={(e) => handleChange(e)} />
-                    </div>
-                    {validationErrors.title && <div className="error-message">{validationErrors.title}</div>}
-                    <div className="input">
-                        <input type="text" id="description" name="description" placeholder="Descrizione" onChange={(e) => handleChange(e)} />
-                    </div>
-                    {validationErrors.description && <div className="error-message">{validationErrors.description}</div>}
-                    <div className="input">
-                        <input type="text" id="tags" name="tags" placeholder="Tags" onChange={(e) => handleChange(e)} />
-                    </div>
-                    {validationErrors.tags && <div className="error-message">{validationErrors.tags}</div>}
-                    <div className="input">
-                        <input type="text" id="imageUrl" name="imageUrl" placeholder="Image" onChange={(e) => handleChange(e)} />
-                    </div>
-                    {validationErrors.imageUrl && <div className="error-message">{validationErrors.imageUrl}</div>}
+                    {mode === 'delete' ? (
+                        <>
+                            <p>Sei sicuro di voler eliminare questo post?</p>
+                            <p className="italic">"{initialPost?.title}"</p>
+                        </>
+                    ) : (
+
+
+
+                        <>
+                            <div className="input">
+                                <input
+                                    type="text"
+                                    id="title"
+                                    name="title"
+                                    value={newPost.title} // Collega il valore dello stato
+                                    placeholder="Titolo"
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            {validationErrors.title && <div className="error-message">{validationErrors.title}</div>}
+                            <div className="input">
+                                <input
+                                    type="text"
+                                    id="description"
+                                    name="description"
+                                    value={newPost.description} // Collega il valore dello stato
+                                    placeholder="Descrizione"
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            {validationErrors.description && <div className="error-message">{validationErrors.description}</div>}
+                            <div className="input">
+                                <input
+                                    type="text"
+                                    id="tags"
+                                    name="tags"
+                                    value={newPost.tags} // Collega il valore dello stato
+                                    placeholder="Tags"
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            {validationErrors.tags && <div className="error-message">{validationErrors.tags}</div>}
+                            <div className="input">
+                                <input
+                                    type="text"
+                                    id="imageUrl"
+                                    name="imageUrl"
+                                    value={newPost.imageUrl} // Collega il valore dello stato
+                                    placeholder="Image"
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            {validationErrors.imageUrl && <div className="error-message">{validationErrors.imageUrl}</div>}
+                        </>
+                    )}
                 </div>
 
                 {message &&

@@ -12,6 +12,7 @@ import TagsOverviewSinglePost from '../components/TagsOverviewSinglePost';
 import Comments from '../components/Comments';
 import Link from 'next/link';
 import EditPostForm from '../components/EditPostForm';
+import PostForm from '../components/PostForm';
 
 const SinglePostLayout = () => {
   const { id } = useParams();
@@ -31,12 +32,24 @@ const SinglePostLayout = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
 
-  const [openModal, setOpenModal] = useState(false);    
-  const handleOpenModal = () => setOpenModal(true);
-  const openForm = () => setShowForm(true);
+  /* const [openModal, setOpenModal] = useState(false); */
+  /* const handleOpenModal = () => setOpenModal(true); */
+  /* const openForm = () => setShowForm(true);
   const closeForm = () => setShowForm(false);
   const openDeleteConfirm = () => setShowDeleteConfirm(true);
-  const closeDeleteConfirm = () => setShowDeleteConfirm(false);
+  const closeDeleteConfirm = () => setShowDeleteConfirm(false); */
+
+
+  const [editPost, setEditPost] = useState(null); // Post da modificare
+  const [openModal, setOpenModal] = useState(false); // Modale aperto o chiuso
+  const [modalMode, setModalMode] = useState('add'); // Modalità del modale (add, edit)
+
+  // Funzione per aprire il modale con la modalità specifica
+  const handleOpenModal = (post = null, mode = 'edit') => {
+    setEditPost(post); // Imposta il post da modificare (se presente)
+    setModalMode(mode); // Imposta la modalità del modale (aggiungi o modifica)
+    setOpenModal(true); // Apri il modale
+  };
 
 
 
@@ -112,18 +125,46 @@ const SinglePostLayout = () => {
                   }
                   {singlePost.description}</div>
                 {user.email && user._id === singlePost.userId._id && !showForm &&
-                  <div className="pb-6 pt-6 text-sm text-gray-700 dark:text-gray-300">
-                    <button onClick={openForm} className="text-blue-500 hover:underline">
-                      Modifica Post
-                    </button>
-                    {` • `}
-                    <button onClick={openDeleteConfirm} className="text-red-500 hover:underline">Elimina Post</button>
-                  </div>
+                  <>
+                    {/* <div className="flex justify-start gap-4">
+                      <button onClick={openForm} className="text-blue-500 hover:underline">
+                        Modifica Post
+                      </button>
+                      {` • `}
+                      <button onClick={openDeleteConfirm} className="text-red-500 hover:underline">Elimina Post</button>
+                    </div> */}
+
+                    <div className="flex justify-start gap-4">
+                      <button onClick={() => handleOpenModal(singlePost, 'edit')} className="text-blue-500 hover:underline">
+                        Modifica Post
+                      </button>
+                      {` • `}
+                      <button onClick={() => handleOpenModal(singlePost, 'delete')} className="text-red-500 hover:underline">
+                        Elimina Post
+                      </button>
+                    </div>
+                  </>
                 }
                 {/********* MODIFICA POST ********/}
-                {showForm && (
-                  <EditPostForm singlePost={singlePost} user={user} closeForm={closeForm} />
+                {/* {showForm && (
+                  <>
+                    <PostForm />
+                  </>
+                )} */}
+
+
+                {/* Modale per aggiungere/modificare post */}
+                {openModal && (
+                  <PostForm
+                    closeModal={() => setOpenModal(false)}
+                    initialPost={editPost} // Passa il post da modificare (se esiste)
+                    mode={modalMode} // Passa la modalità
+                  />
                 )}
+
+
+
+
                 {/******* COMMENTI DEL POST ******/}
                 <Comments postId={singlePost._id} />
               </div>
