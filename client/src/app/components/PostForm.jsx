@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation"; // Importa il router di Next.js
 import { addPost, updatePost, deletePost } from "../store/postsSlice";
 
 const PostForm = ({ closeModal, initialPost = null, mode = 'add' }) => {
     const dispatch = useDispatch(); // Hook Redux per inviare azioni
+    const router = useRouter(); // Hook per navigare programmaticamente
     const user = useSelector(state => state.user); // Dati dell'utente loggato
     const [action, setAction] = useState("Aggiungi un Post");
     const [newPost, setNewPost] = useState({
@@ -144,11 +146,13 @@ const PostForm = ({ closeModal, initialPost = null, mode = 'add' }) => {
 
 
 
-            if (res.ok) {                
+            if (res.ok) {
                 if (mode === 'delete') {
                     // Dispatch dell'azione per rimuovere il post
                     dispatch(deletePost({ postId: initialPost._id }));
                     setMessage({ text: 'Post eliminato con successo!', type: 'info' });
+                    // Reindirizza l'utente alla pagina blog dopo l'eliminazione del post
+                    router.push('/blog');
                 } else {
                     const savedPost = await res.json();
 
