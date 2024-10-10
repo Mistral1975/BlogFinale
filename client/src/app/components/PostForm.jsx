@@ -110,6 +110,8 @@ const PostForm = ({ closeModal, initialPost = null, mode = 'add' }) => {
                 tags: newPost.tags,
             };
 
+            console.log("TAGS: ", newPost.tags)
+
             // Aggiunge solo i campi `userId` e `updatedAt` in modalità `edit`
             if (mode === 'edit') {
                 payload.userId = user._id;   // Include userId solo se stai modificando
